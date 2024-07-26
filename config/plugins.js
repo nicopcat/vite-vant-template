@@ -8,20 +8,20 @@ import { viteMockServe } from 'vite-plugin-mock' // https://github.com/anncwb/vi
 import { svgBuilder } from '../config/svgBuilder.js'
 import vueJsx from "@vitejs/plugin-vue-jsx"
 
-export function composePlugins( command, VITE_LEGACY ) {
-  const prodMock = true
+export function composePlugins(command, VITE_LEGACY) {
+  const prodMock = false
   const lifecycle = process.env.npm_lifecycle_event
   return [
     vue(),
     DefineOptions(),
     vueJsx(),
-    svgBuilder( './src/icons/svg/' ),
+    svgBuilder('./src/icons/svg/'),
     // eslintPlugin({
     //   include: ['src/**/*.js', 'src/**/*.vue', 'src/*.js', 'src/*.vue']
     // }),
     // https://www.npmjs.com/package/@vitejs/plugin-legacy
     VITE_LEGACY
-      ? legacy( {
+      ? legacy({
         targets: ['ie >= 11'],
         additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
         // renderLegacyChunks: true,
@@ -43,29 +43,29 @@ export function composePlugins( command, VITE_LEGACY ) {
         //   'esnext.global-this',
         //   'esnext.string.match-all'
         // ]
-        } )
+      })
       : null,
     // https://www.npmjs.com/package/rollup-plugin-visualizer
     lifecycle === "report"
-      ? visualizer( {
+      ? visualizer({
         open: true,
         gzipSize: true,
         brotliSize: true,
         filename: "report.html"
-      } )
+      })
       : null,
-  
-    viteMockServe( {
+
+    viteMockServe({
       mockPath: 'mock',
-      watchFiles : true,
-      supportTs : false,
-      localEnabled : command === 'serve',
-      prodEnabled : command !== 'serve' && prodMock,
-      injectCode : `
+      watchFiles: true,
+      supportTs: false,
+      localEnabled: command === 'serve',
+      prodEnabled: command !== 'serve' && prodMock,
+      injectCode: `
           import { setupProdMockServer } from './mockProdServer';
           setupProdMockServer();
         `,
-      logger : false
-    } )
+      logger: false
+    })
   ]
 }
