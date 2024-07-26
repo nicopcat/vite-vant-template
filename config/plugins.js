@@ -1,6 +1,6 @@
 
 import vue from '@vitejs/plugin-vue'
-// import eslintPlugin from 'vite-plugin-eslint'
+import eslintPlugin from 'vite-plugin-eslint'
 import DefineOptions from "unplugin-vue-define-options/vite"
 import legacy from '@vitejs/plugin-legacy'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -16,9 +16,9 @@ export function composePlugins( command, VITE_LEGACY ) {
     DefineOptions(),
     vueJsx(),
     svgBuilder( './src/icons/svg/' ),
-    // eslintPlugin({
-    //   include: ['src/**/*.js', 'src/**/*.vue', 'src/*.js', 'src/*.vue']
-    // }),
+    eslintPlugin({
+      include: ['src/**/*.js', 'src/**/*.vue', 'src/*.js', 'src/*.vue']
+    }),
     // https://www.npmjs.com/package/@vitejs/plugin-legacy
     VITE_LEGACY
       ? legacy( {
