@@ -19,7 +19,7 @@ export const GLOBAL_DATA = {
     baseUrl : '/api'
   },
   pro : {
-    baseUrl : '/api'
+    baseUrl : '/pro-api'
   }
 }
 
