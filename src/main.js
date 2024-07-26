@@ -23,6 +23,7 @@ import registerDirective from '@/directive'
 import { setupI18n } from '@/locale'
 
 const app = createApp(App)
+console.log(import.meta.env.VITE_PROXY_DOMAIN_REAL)
 
 const initApp = async() => {
   app.use(router)
