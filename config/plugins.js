@@ -9,7 +9,7 @@ import { svgBuilder } from '../config/svgBuilder.js'
 import vueJsx from "@vitejs/plugin-vue-jsx"
 
 export function composePlugins( command, VITE_LEGACY ) {
-  const prodMock = true
+  const prodMock = false
   const lifecycle = process.env.npm_lifecycle_event
   return [
     vue(),
