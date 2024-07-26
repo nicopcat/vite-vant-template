@@ -173,7 +173,7 @@ const onSubmit = async values => {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 @import './index.scss';
 .handle {
   text-align: center;

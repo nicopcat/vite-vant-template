@@ -154,7 +154,7 @@ export const asyncRoutes = [
 
   {
     path : '/',
-    name : 'Index',
+    name : 'Home',
     component : NormalLayout,
     redirect : '/index',
     children : [
@@ -173,20 +173,25 @@ export const asyncRoutes = [
   },
 
   {
-    path : '/qms/qualityLot/index',
+    path : '/qms/qualityLot',
     name : 'QualityLotIndex',
     component : NormalLayout,
     redirect : '/qms/qualityLot/index',
-    meta : {
-      title : '检验批',
-      //icon: "Find",
-      noCache : true,
-      roles : ['admin', 'user']
-    },
     children : [
       {
-        path : '/qms/qualityLot/execute',
-        name : 'execute',
+        path : 'index',
+        name : 'QualityLotIndex',
+        component : () => import('@/views/qms/qualityLot/index'),
+        meta : {
+          title : '检验批管理',
+          //icon: "Find",
+          noCache : true,
+          roles : ['admin', 'user']
+        }
+      },
+      {
+        path : 'execute',
+        name : 'QualityLotExecute',
         component : () => import('@/views/qms/qualityLot/execute'),
         meta : {
           title : '检验批执行',
@@ -196,8 +201,8 @@ export const asyncRoutes = [
         }
       },
       {
-        path : '/qms/qualityLot/detail',
-        name : 'detail',
+        path : 'detail',
+        name : 'QualityLotDetail',
         component : () => import('@/views/qms/qualityLot/detail'),
         meta : {
           title : '检验批详情',
@@ -209,6 +214,35 @@ export const asyncRoutes = [
     ]
   },
 
+  {
+    path : '/eam/repair',
+    name : 'Repair',
+    component : NormalLayout,
+    redirect : '/eam/repair/index',
+    children : [
+      {
+        path : 'index',
+        name : 'Repairindex',
+        component : () => import('@/views/eam/repair/index'),
+        meta : {
+          title : '设备维修管理',
+          //icon: "Find",
+          noCache : true
+          //roles : ['admin', 'user']
+        }
+      },
+      {
+        path : 'view',
+        name : 'RepairView',
+        component : () => import('@/views/eam/repair/view'),
+        meta : {
+          title : '查看',
+          //icon: "Find",
+          noCache : true
+        }
+      }
+    ]
+  },
   {
     path : '/:pathMatch(.*)',
     redirect : '/404',

@@ -1,16 +1,16 @@
 <template>
-  <view>
-    <view class="content">
-      <view class="header">
+  <div class="section">
+    <div class="content">
+      <div class="header">
         <span>检验批信息</span>
-      </view>
+      </div>
       <van-cell-group>
-        <van-cell>
+        <van-cell class="flex-col">
           <template #title>
-            <span class="custom-title">{{ data.qualityLotCode }}</span>
+            <span class="text-sm font-bold break-words">{{ data.qualityLotCode }}</span>
           </template>
           <template #label>
-            <view class="text">
+            <div class="text">
               <van-row justify="space-between">
                 <van-col span="8" class="text-title">检验类型</van-col>
                 <van-col span="16" class="text-res" style="text-align: end">{{ data.qualityLotType }}</van-col>
@@ -22,22 +22,22 @@
               <!-- <van-row justify="end" style="border-top: 1px solid #e3e3e3;margin-top: 10px;padding: 10px 0">
                  <van-button type="primary" size="small">执行</van-button>
               </van-row> -->
-            </view>
+            </div>
           </template>
         </van-cell>
       </van-cell-group>
-    </view>
+    </div>
 
-    <view style="padding: 0.4rem 0.8rem">
+    <div class="m-2">
       <van-button type="primary" size="small" style="margin-right: 10px">保 存</van-button>
       <van-button type="success" size="small">提 交</van-button>
-    </view>
+    </div>
 
-    <view class="container">
-      <!-- <view class="header">
+    <div class="container">
+      <!-- <div class="header">
         <span>检验批详情</span>
-      </view> -->
-      <view class="box" v-for="(item, index) in data.formValue" :key="index">
+      </div> -->
+      <div class="box" v-for="(item, index) in data.formValue" :key="index">
         <van-row justify="space-between" class="box-item">
           <van-col span="8" class="text-title">检验项号</van-col>
           <van-col span="16" class="text-res" style="text-align: end">{{ item.code }}</van-col>
@@ -75,9 +75,9 @@
             </van-radio-group>
           </van-col>
         </van-row>
-      </view>
-    </view>
-  </view>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -310,10 +310,6 @@ const data = ref({
 </script>
 
 <style lang="less" scoped>
-page {
-  background-color: #f2f4f8;
-}
-
 .content {
   width: 100%;
   background-color: #f2f4f8;
@@ -335,7 +331,7 @@ page {
   }
 
   .custom-title {
-    font-size: 13px;
+    font-size: 1rem;
     font-family: 'Helvetica', sans-serif;
     font-weight: bold;
   }
@@ -388,11 +384,11 @@ page {
       margin: 0.4rem;
 
       .text-title {
-        font-size: 13px;
+        // font-size: 13px;
         color: #969799;
       }
       .text-res {
-        font-size: 13px;
+        // font-size: 13px;
         color: #333;
       }
     }

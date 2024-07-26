@@ -1,8 +1,14 @@
 //@charset "UTF-8";
 // 引入重置样式
+@import './tailwind.css';
+
 @import './variables.scss';
 @import './mixin.scss';
 @import './reset.scss';
 @import './transition.scss';
 @import './custom-btn.scss';
 @import './vant-custom.scss';
+
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;

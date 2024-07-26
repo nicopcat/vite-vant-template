@@ -1,16 +1,16 @@
 <template>
-  <view>
-    <view class="content">
-      <view class="header">
+  <div>
+    <div class="content">
+      <div class="header">
         <span>检验批信息</span>
-      </view>
+      </div>
       <van-cell-group>
-        <van-cell>
+        <van-cell class="flex-col">
           <template #title>
-            <span class="custom-title">{{ data.qualityLotCode }}</span>
+            <span class="text-sm font-bold break-words">{{ data.qualityLotCode }}</span>
           </template>
           <template #label>
-            <view class="text">
+            <div class="text">
               <van-row justify="space-between">
                 <van-col span="8" class="text-title">检验类型</van-col>
                 <van-col span="16" class="text-res" style="text-align: end">{{ data.qualityLotType }}</van-col>
@@ -19,17 +19,17 @@
                 <van-col span="8" class="text-title">检验结果</van-col>
                 <van-col span="16" class="text-res" style="text-align: end">{{ data.qualityLotStatus }}</van-col>
               </van-row>
-            </view>
+            </div>
           </template>
         </van-cell>
       </van-cell-group>
-    </view>
+    </div>
 
-    <view class="container">
-      <!-- <view class="header">
+    <div class="container">
+      <!-- <div class="header">
         <span>检验批详情</span>
-      </view> -->
-      <view class="box" v-for="(item, index) in data.formValue" :key="index">
+      </div> -->
+      <div class="box" v-for="(item, index) in data.formValue" :key="index">
         <van-row justify="space-between" class="box-item">
           <van-col span="8" class="text-title">检验项号</van-col>
           <van-col span="16" class="text-res" style="text-align: end">{{ item.code }}</van-col>
@@ -61,15 +61,15 @@
         <van-row justify="space-between" class="box-item">
           <van-col span="8" class="text-title">结果</van-col>
           <van-col span="16" class="text-res">
-            <van-radio-group v-model="item.result" direction="horizontal" style="justify-content: flex-end">
+            <van-radio-group v-model="item.result" disabled direction="horizontal" style="justify-content: flex-end">
               <van-radio name="1">合格</van-radio>
               <van-radio name="0">不合格</van-radio>
             </van-radio-group>
           </van-col>
         </van-row>
-      </view>
-    </view>
-  </view>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -379,11 +379,9 @@ page {
       margin: 0.4rem;
 
       .text-title {
-        font-size: 13px;
         color: #969799;
       }
       .text-res {
-        font-size: 13px;
         color: #333;
       }
     }

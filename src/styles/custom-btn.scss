@@ -11,41 +11,50 @@
     background: $white;
     color: $color;
   }
+
   &:hover {
     background: $white;
     color: $hoverColor;
+
     &:before,
     &:after {
       color: $white;
       background: transparent;
     }
   }
+
   &:active {
     color: $activeColor;
     background: $white;
+
     &:before,
     &:after {
       color: $white;
       background: transparent;
     }
   }
+
   &.is-disabled {
     &.el-button--default {
       background: $white;
       color: $disabledColor;
     }
+
     &:hover {
       background: $white;
       color: $disabledColor;
+
       &:before,
       &:after {
         color: $disabledColor;
         background: transparent;
       }
     }
+
     &:active {
       color: $disabledColor;
       background: $white;
+
       &:before,
       &:after {
         color: $disabledColor;
@@ -53,6 +62,7 @@
       }
     }
   }
+
   border: none;
 }
 
@@ -65,6 +75,7 @@
       var(--yu-yellow-color--disabled)
     );
   }
+
   &.gray-btn {
     @include colorBtn(var(--yu-gray-color), var(--yu-gray-color), var(--yu-gray-color), var(--yu-gray-color));
   }

@@ -20,9 +20,9 @@ module.exports = {
       selectorBlackList: ['.norem'] // 过滤掉.norem-开头的class，不进行rem转换
     }
   },
-  // plugins: [
-  //   require('tailwindcss'),
-  //   require('autoprefixer'),
-  //   require('postcss-import')
-  // ]
+  plugins: [
+    require('tailwindcss'),
+    require('autoprefixer'),
+    require('postcss-import')
+  ]
 }

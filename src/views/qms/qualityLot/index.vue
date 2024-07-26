@@ -1,26 +1,31 @@
 <template>
-  <view class="content">
-    <view v-for="(item, index) in list" class="content-box" :key="index">
+  <div class="">
+    <div v-for="(item, index) in list" class="my-4 w-full" :key="index">
       <van-cell-group inset>
-        <van-cell>
+        <van-cell class="flex-col">
           <template #title>
-            <span class="custom-title">{{ item.code }}</span>
+            <span class="text-sm font-bold break-words">{{ item.code }}</span>
           </template>
           <template #label>
-            <view class="">检验类型：{{ item.type }}</view>
-            <view class="">检验结果：{{ item.result }}</view>
-            <view class="">检验状态：{{ item.status }}</view>
-
-            <view style="margin: 1rem 0.2rem 0 0">
+            <div class="text-sm mt-1">
+              检验类型：<span class="text-black"> {{ item.type }}</span>
+            </div>
+            <div class="text-sm mt-1">
+              检验结果： <span class="text-black">{{ item.result }}</span>
+            </div>
+            <div class="text-sm mt-1">
+              检验状态： <span class="text-black"> {{ item.status }}</span>
+            </div>
+            <div class="mt-3">
               <van-button type="success"
 icon="down"
-size="mini"
+size="small"
 @click="execute(item)"
 style="margin-right: 10px"
                 >执 行</van-button
               >
-              <van-button type="primary" icon="notes-o" size="mini" @click="detail(item)">详 情</van-button>
-            </view>
+              <van-button type="primary" icon="notes-o" size="small" @click="detail(item)">详 情</van-button>
+            </div>
           </template>
           <!-- 自定义单元格最右侧的额外内容 -->
           <!-- <template #value>
@@ -28,8 +33,8 @@ style="margin-right: 10px"
           </template> -->
         </van-cell>
       </van-cell-group>
-    </view>
-  </view>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -146,29 +151,29 @@ page {
   background-color: #f2f4f8;
 }
 
-.content {
-  .custom-title {
-    font-size: 13px;
-    font-family: 'Helvetica', sans-serif;
-    font-weight: bold;
-  }
+// .content {
+//   .custom-title {
+//     font-size: 13px;
+//     font-family: 'Helvetica', sans-serif;
+//     font-weight: bold;
+//   }
 
-  width: 100%;
-  margin: 1rem 0;
-  background-color: #f2f4f8;
+//   width: 100%;
+//   margin: 1rem 0;
+//   background-color: #f2f4f8;
 
-  &-box {
-    padding: 0.2rem 0;
-    border-radius: 4px;
-    background-color: #fff;
-    margin: 0.6rem;
+//   &-box {
+//     padding: 0.2rem 0;
+//     border-radius: 4px;
+//     background-color: #fff;
+//     margin: 0.6rem;
 
-    .custom-title {
-      font-size: 11px;
-    }
-  }
-}
-.van-cell {
-  padding: 0.4rem;
-}
+//     .custom-title {
+//       font-size: 11px;
+//     }
+//   }
+// }
+// .van-cell {
+//   padding: 0.4rem;
+// }
 </style>

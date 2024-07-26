@@ -1,16 +1,16 @@
 <template>
-  <view class="content">
-    <view v-for="(item, index) in list" class="content-box" :key="index">
+  <div class="content">
+    <div v-for="(item, index) in list" class="content-box" :key="index">
       <van-cell-group inset>
-        <van-cell>
+        <van-cell class="flex-col">
           <template #title>
-            <span class="custom-title">{{ item.code }}</span>
+            <span class="text-sm font-bold break-words">{{ item.code }}</span>
           </template>
           <template #label>
-            <!-- <view class="">维修工单号：{{ item.code }}</view> -->
-            <view class="">
+            <!-- <div class="">维修工单号：{{ item.code }}</div> -->
+            <div class="">
               <van-row justify="space-between">
-                <van-col span="8" class="text-title">故障提报时间</van-col>
+                <van-col span="8" class="t-title">故障提报时间</van-col>
                 <van-col span="16" class="text-res" style="text-align: end">{{ item.faultReportTime }}</van-col>
               </van-row>
               <van-row justify="space-between">
@@ -21,42 +21,36 @@
                 <van-col span="8" class="text-title">状态</van-col>
                 <van-col span="16" class="text-res" style="text-align: end">{{ item.status }}</van-col>
               </van-row>
-            </view>
-            <!-- <view class="">提报人：{{ item.reportUser }}</view>
-            <view class="">状态：{{ item.status }}</view> -->
+            </div>
+            <!-- <div class="">提报人：{{ item.reportUser }}</div>
+            <div class="">状态：{{ item.status }}</div> -->
 
-            <view style="margin: 1rem 0.2rem 0 0">
-              <van-button
-                v-if="item.status === 'COMPLETED'"
-                size="small"
-                @click="execute(item)"
-                style="margin-right: 10px"
+            <div style="margin: 1rem 0.2rem 0 0">
+              <van-button v-if="item.status === 'COMPLETED'"
+size="small"
+@click="view(item)"
+style="margin-right: 10px"
                 >查 看</van-button
               >
-              <van-button size="small"
-type="primary"
-@click="execute(item)"
-style="margin-right: 10px"
-                >编 辑</van-button
-              >
+              <van-button size="small" type="primary" @click="edit(item)" style="margin-right: 10px">编 辑</van-button>
               <van-button
                 v-if="item.status === 'ONGOING'"
                 type="success"
                 size="small"
                 style="margin-right: 10px"
-                @click="detail(item)"
+                @click="complete(item)"
                 >完 成</van-button
               >
-              <van-button size="small" style="margin-right: 10px" @click="detail(item)">关 闭</van-button>
+              <van-button size="small" style="margin-right: 10px" @click="routerTo(item)">关 闭</van-button>
               <van-button
                 v-if="item.status === 'WAITINGFORREPAIR'"
                 type="danger"
                 size="small"
                 style="margin-right: 10px"
-                @click="detail(item)"
+                @click="cancel(item)"
                 >撤 销</van-button
               >
-            </view>
+            </div>
           </template>
           <!-- 自定义单元格最右侧的额外内容 -->
           <!-- <template #value>
@@ -64,8 +58,8 @@ style="margin-right: 10px"
           </template> -->
         </van-cell>
       </van-cell-group>
-    </view>
-  </view>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -336,12 +330,19 @@ const list = ref([
   }
 ])
 
-function execute(params){
-  router.push('/qms/qualityLot/execute')
+function view(item){
+  router.push({ name : 'RepairView', state : { id : item.id }}) //-> /user/123
 }
 
-function detail(params){
-  router.push('/qms/qualityLot/detail')
+function edit(params){
+  //router.push('/eam/repair/detail')
+}
+function complete(params){
+  //router.push('/eam/repair/detail')
+}
+
+function cancel(params){
+  console.log(params)
 }
 </script>
 

@@ -60,11 +60,11 @@ async function tabChange(name){}
   .van-tabbar-item {
     color: var(--yu-gray-color);
     .tab-bar-txt {
-      font-size: 16px;
+      font-size: 12px;
     }
     .tab-bar-icon {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
     }
     &.van-tabbar-item--active {
       color: var(--yu-dark-color);
