@@ -10,6 +10,7 @@ function resolve( dir ) {
 
 // https://vitejs.dev/config/
 export default defineConfig( ( { command, mode } ) => {
+  console.log(mode);
   const root = process.cwd()
   const env = getEnv( loadEnv( mode, process.cwd() ) )
   const { VITE_PORT, VITE_PROXY_DOMAIN, VITE_PROXY_DOMAIN_REAL, VITE_LEGACY } = env
@@ -53,7 +54,7 @@ export default defineConfig( ( { command, mode } ) => {
 
     build: {
       path : './',
-      sourcemap: false,
+      sourcemap: true,
       brotliSize: false,
       chunkSizeWarningLimit: 2500,
 

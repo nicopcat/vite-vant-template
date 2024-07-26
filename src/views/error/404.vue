@@ -35,45 +35,45 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
-function randomNum() {
-  return Math.floor( Math.random() * 9 ) + 1
+function randomNum(){
+  return Math.floor(Math.random() * 9) + 1
 }
 
-const thirdDigit = ref( 0 )
-const secondDigit = ref( 0 )
-const firstDigit = ref( 0 )
+const thirdDigit = ref(0)
+const secondDigit = ref(0)
+const firstDigit = ref(0)
 
 const time = 30
 let i = 0
 
-const loop3 = setInterval( function() {
-  if ( i > 40 ) {
-    clearInterval( loop3 )
+const loop3 = setInterval(function(){
+  if (i > 40){
+    clearInterval(loop3)
     thirdDigit.value = 4
   } else {
     thirdDigit.value = randomNum()
     i++
   }
-}, time )
+}, time)
 
-const loop2 = setInterval( function() {
-  if ( i > 80 ) {
-    clearInterval( loop2 )
+const loop2 = setInterval(function(){
+  if (i > 80){
+    clearInterval(loop2)
     secondDigit.value = 0
   } else {
     secondDigit.value = randomNum()
     i++
   }
-}, time )
-const loop1 = setInterval( function() {
-  if ( i > 100 ) {
-    clearInterval( loop1 )
+}, time)
+const loop1 = setInterval(function(){
+  if (i > 100){
+    clearInterval(loop1)
     firstDigit.value = 4
   } else {
     firstDigit.value = randomNum()
     i++
   }
-}, time )
+}, time)
 </script>
 
 <style lang="scss" scoped>

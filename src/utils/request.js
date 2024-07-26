@@ -1,11 +1,3 @@
-/**
- * @Description: axios封装
- * @Author: 灰是小灰灰的灰
- * @Email: 454539387@qq.com
- * @Date: 2021-07-06 11:49:40
- * @LastEditors: 灰是小灰灰的灰
- * @LastEditTime: 2021-07-06 11:49:40
- */
 'use strict'
 import axios from 'axios'
 import { getEnvs } from './envs'
@@ -13,25 +5,24 @@ import cookies from '@/utils/cookies'
 import router from '@/router'
 import { useUserStore } from '@/store'
 import { showToast } from 'vant'
-
+import { localStorageHandle } from '@/utils/storage'
 import { TOKEN, WHITE_CODE_LIST, LOGIN_ERROR_CODE, GLOBAL_DATA } from '@/config/constant'
-import qs from 'qs'
 
-class HttpRequest {
-  // #baseUrl
-  constructor() {
+class HttpRequest{
+  //#baseUrl
+  constructor(){
     this.baseUrl = this.getBaseUrl()
     this.withCredentials = false
     this.timeout = 60 * 60 * 24 * 1000
   }
 
-  getBaseUrl() {
+  getBaseUrl(){
     const { envStr } = getEnvs()
     const baseUrlStr = envStr === 'dev' ? import.meta.env.VITE_PROXY_DOMAIN : GLOBAL_DATA[envStr].baseUrl
     return baseUrlStr
   }
 
-  getConfig() {
+  getConfig(){
     const config = {
       baseURL : this.baseUrl,
       timeout : this.timeout,
@@ -43,9 +34,9 @@ class HttpRequest {
     return config
   }
 
-  getParams( payload ) {
+  getParams(payload){
     const { method, data } = payload
-    if ( ['post', 'put', 'patch', 'delete'].indexOf( method ) >= 0 ) {
+    if (['post', 'put', 'patch', 'delete'].indexOf(method) >= 0){
       payload.data = data
     } else {
       payload.params = data
@@ -54,9 +45,9 @@ class HttpRequest {
     return payload
   }
 
-  checkStatus( status ) {
+  checkStatus(status){
     let errMessage = ''
-    switch ( status ) {
+    switch (status){
       case 400:
         errMessage = '错误请求'
         break
@@ -99,63 +90,67 @@ class HttpRequest {
     return errMessage
   }
 
-  // 拦截处理
-  setInterceptors( instance ) {
+  //拦截处理
+  setInterceptors(instance){
     const that = this
 
-    // 请求拦截
+    //请求拦截
     instance.interceptors.request.use(
       config => {
-        if ( !navigator.onLine ) {
-          showToast( {
+        if (!navigator.onLine){
+          showToast({
             message : '请检查您的网络是否正常',
             type : 'fail',
             duration : 3 * 1000
-          } )
-          return Promise.reject( new Error( '请检查您的网络是否正常' ) )
+          })
+          return Promise.reject(new Error('请检查您的网络是否正常'))
         }
-        const token = cookies.get( TOKEN )
-        if ( token ) {
-          config.headers.Authorization = token
+        const token = cookies.get(TOKEN)
+        if (token){
+          config.headers.Authorization = `Bearer ${token}`
         }
-        config.data = qs.stringify( config.data )
+        const currentUser = localStorageHandle.getItem('CURRENT-USER')
+        if (currentUser){
+          config.headers.Clientid = currentUser?.client_id
+        }
+        //config.data = qs.stringify( config.data )
 
         return config
       },
       error => {
-        return Promise.reject( new Error( error ) )
+        return Promise.reject(new Error(error))
       }
     )
 
-    // 响应拦截
+    //响应拦截
     instance.interceptors.response.use(
       res => {
         const result = res.data
-        const type = Object.prototype.toString.call( result )
+        const type = Object.prototype.toString.call(result)
 
-        // const $config = res.config
+        //const $config = res.config
 
-        // 如果是文件流 直接返回
-        if ( type === '[object Blob]' || type === '[object ArrayBuffer]' ) {
+        //如果是文件流 直接返回
+        if (type === '[object Blob]' || type === '[object ArrayBuffer]'){
           return result
         } else {
-          const { code, message } = result
-          const isErrorToken = LOGIN_ERROR_CODE.find( item => item.code == code )
-          const isWhiteCode = WHITE_CODE_LIST.find( item => item.code == code )
+          const { code, msg } = result
+          const isErrorToken = LOGIN_ERROR_CODE.find(item => item.code == code)
+          const isWhiteCode = WHITE_CODE_LIST.find(item => item.code == code)
 
           const userStore = useUserStore()
 
-          if ( isErrorToken ) {
-            userStore.LOGIN_OUT()
-            router.push( '/login' )
+          if (isErrorToken){
+            userStore.logout()
+            router.push('/login')
             window.location.reload()
-          } else if ( !isWhiteCode ) {
-            showToast( {
-              message : message || 'Error',
+          } else if (!isWhiteCode){
+            showToast({
+              message : msg || 'Error',
               type : 'fail',
               duration : 3 * 1000
-            } )
-            return Promise.reject( new Error( message || 'Error' ) )
+            })
+            return Promise.reject(new Error(msg || 'Error'))
           } else {
             return result
           }
@@ -164,26 +159,26 @@ class HttpRequest {
         return result
       },
       error => {
-        if ( error && error.response ) {
-          error.message = that.checkStatus( error.response.status )
+        if (error && error.response){
+          error.msg = that.checkStatus(error.response.status)
         }
-        const isTimeout = error.message.includes( 'timeout' )
-        showToast( {
-          message : isTimeout ? '网络请求超时' : error.message || '连接到服务器失败',
+        const isTimeout = error.msg.includes('timeout')
+        showToast({
+          message : isTimeout ? '网络请求超时' : error.msg || '连接到服务器失败',
           type : 'fail',
           duration : 2 * 1000
-        } )
-        return Promise.reject( new Error( error.message ) )
+        })
+        return Promise.reject(new Error(error.msg))
       }
     )
   }
 
-  request( options ) {
+  request(options){
     const instance = axios.create()
     const baseOpt = this.getConfig()
-    const params = Object.assign( {}, baseOpt, this.getParams( options ) )
-    this.setInterceptors( instance )
-    return instance( params )
+    const params = Object.assign({}, baseOpt, this.getParams(options))
+    this.setInterceptors(instance)
+    return instance(params)
   }
 }
 

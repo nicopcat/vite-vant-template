@@ -13,9 +13,9 @@ const userInfo = () => {
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: '灰是小灰灰的灰',
     phone: '15988888888',
-    email: '454539387@qq.com',
+    email: 'abc@qq.com',
     identity: '',
-    roles: ['admin'],
+    roles: ['superadmin'],
   }
   return result
 }

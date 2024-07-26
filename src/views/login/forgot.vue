@@ -75,16 +75,16 @@ import { showSuccessToast, showFailToast } from 'vant'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const trigger = 'onBlur' // onChange
-const formState = reactive( {
+const trigger = 'onBlur' //onChange
+const formState = reactive({
   phone : '',
   password : '',
   code : ''
-} )
+})
 
-const checkPhone = ( value, rule ) => {
-  if ( !value ) return '请填写手机号码！'
-  if ( !validPhone( value ) ) return '手机号格式不正确！'
+const checkPhone = (value, rule) => {
+  if (!value) return '请填写手机号码！'
+  if (!validPhone(value)) return '手机号格式不正确！'
   return true
 }
 
@@ -94,30 +94,30 @@ const rules = {
   code : [{ pattern : /\d{6}/, message : '验证码格式不正确', trigger }]
 }
 
-const canSubmit = computed( () => {
+const canSubmit = computed(() => {
   const { phone, password, code } = formState
-  return !!( phone && password && code )
-} )
+  return !!(phone && password && code)
+})
 
-// const agree = ref( false ) // 用户隐私协议
+//const agree = ref( false ) // 用户隐私协议
 
-async function getCode() {
+async function getCode(){
   try {
-    // TODO 获取短信请求
-    // const { data } = await getSmsCode( { phone : formState.phone } )
-    showSuccessToast( '短信发送成功' )
-  } catch ( e ) {
-    showFailToast( '获取短信失败，请稍后再试...' )
+    //TODO 获取短信请求
+    //const { data } = await getSmsCode( { phone : formState.phone } )
+    showSuccessToast('短信发送成功')
+  } catch (e){
+    showFailToast('获取短信失败，请稍后再试...')
   }
 }
 
 const onSubmit = async values => {
   try {
-    // TODO 注册请求
-    // const { data } = await register( { ...formState } )
-    showSuccessToast( '注册成功' )
-  } catch ( e ) {
-    showFailToast( '注册失败，请稍后再试...' )
+    //TODO 注册请求
+    //const { data } = await register( { ...formState } )
+    showSuccessToast('注册成功')
+  } catch (e){
+    showFailToast('注册失败，请稍后再试...')
   }
 }
 </script>

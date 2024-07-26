@@ -151,9 +151,9 @@ import YuCard from '@/components/YuCard'
 import YuAppCard from '@/components/YuAppCard'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css/bundle'
-// import 'swiper/css'
+//import 'swiper/css'
 
-// import listImg from '@/assets/imgs/list.jpg'
+//import listImg from '@/assets/imgs/list.jpg'
 import img1 from '@/assets/imgs/img1.jpg'
 import img2 from '@/assets/imgs/img2.jpg'
 import img3 from '@/assets/imgs/img3.jpg'
@@ -169,15 +169,15 @@ const imgs = {
   animal3
 }
 
-const list = ref( [] )
+const list = ref([])
 
-function getList() {
-  for ( var i = 0; i < 4; i++ ) {
-    list.value.push( {
+function getList(){
+  for (var i = 0; i < 4; i++){
+    list.value.push({
       id : i,
       img : imgs['animal' + i],
       title : '动物世界'
-    } )
+    })
   }
 }
 getList()

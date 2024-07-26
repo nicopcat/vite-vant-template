@@ -4,6 +4,6 @@ import demoMock from '../mock/demo'
 import articleMock from '../mock/article'
 export const mockModules = [...userMock, ...demoMock, ...articleMock]
 
-export function setupProdMockServer() {
-  createProdMockServer( mockModules )
+export function setupProdMockServer(){
+  createProdMockServer(mockModules)
 }

@@ -41,18 +41,18 @@ import bg2 from '@/assets/imgs/bg-img2.png'
 import { ref, nextTick } from 'vue'
 
 const searchInp = ref()
-const search = ref( '' )
-const focusSearch = ref( false )
+const search = ref('')
+const focusSearch = ref(false)
 
-function searchBlur() {
+function searchBlur(){
   focusSearch.value = false
-  // 搜索请求 TODO
+  //搜索请求 TODO
 }
-function showSearch() {
+function showSearch(){
   focusSearch.value = true
-  nextTick( () => {
+  nextTick(() => {
     searchInp.value && searchInp.value.focus()
-  } )
+  })
 }
 </script>
 

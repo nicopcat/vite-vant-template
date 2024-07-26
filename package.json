@@ -1,5 +1,5 @@
 {
-  "name": "vite-vant-template",
+  "name": "smart-factory-app",
   "private": true,
   "version": "3.0.0",
   "description": "vite-element-admin",
@@ -14,11 +14,6 @@
     "lint": "npm run lint-prettier && npm run lint-fix",
     "preview": "vite preview",
     "prepare": "husky install"
-  },
-  "author": {
-    "name": "灰是小灰灰的灰",
-    "email": "454539387@qq.com",
-    "url": ""
   },
   "dependencies": {
     "@vueuse/core": "^9.6.0",
@@ -39,7 +34,7 @@
     "swiper": "^9.0.2",
     "tailwindcss": "^3.2.4",
     "unplugin-vue-define-options": "^1.2.0",
-    "vant": "^4.0.10",
+    "vant": "^4.9.3",
     "vue": "^3.2.45",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.6"
@@ -60,6 +55,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-vue": "^9.8.0",
     "husky": "^8.0.2",
+    "less": "^4.2.0",
     "lint-staged": "^13.0.4",
     "postcss": "^8.4.21",
     "postcss-import": "^15.1.0",

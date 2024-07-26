@@ -11,14 +11,14 @@
 
 <script setup lang="ts">
 import { showToast } from 'vant'
-// import { onMounted, computed } from 'vue'
+//import { onMounted, computed } from 'vue'
 
-const onClickLeft = () => showToast( '返回' )
-const onClickRight = () => showToast( '按钮' )
+const onClickLeft = () => showToast('返回')
+const onClickRight = () => showToast('按钮')
 
-// const emit = defineEmits( ['change', 'delete'] )
-// onMounted( () => {} )
-// const count = computed( () => {} )
+//const emit = defineEmits( ['change', 'delete'] )
+//onMounted( () => {} )
+//const count = computed( () => {} )
 </script>
 
 <style lang="scss" scoped></style>

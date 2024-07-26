@@ -1,6 +1,6 @@
 <template>
   <van-tabbar v-model="active" class="tab-bar" @change="tabChange">
-    <van-tabbar-item to="/" name="Dashboard">
+    <van-tabbar-item to="/" name="Index">
       <span class="tab-bar-txt">首页</span>
       <template #icon>
         <svg-icon icon-class="home" class-name="tab-bar-icon"></svg-icon>
@@ -14,20 +14,20 @@
       </template>
     </van-tabbar-item>
 
-    <van-tabbar-item class="add-item" to="/add">
+    <!-- <van-tabbar-item class="add-item" to="/add">
       <template #icon>
         <div class="add">
           <svg-icon icon-class="add" class-name="tab-bar-icon"></svg-icon>
         </div>
       </template>
-    </van-tabbar-item>
+    </van-tabbar-item> -->
 
-    <van-tabbar-item badge="5" to="/message" name="Message">
+    <!-- <van-tabbar-item badge="5" to="/message" name="Message">
       <span class="tab-bar-txt">消息</span>
       <template #icon>
         <svg-icon icon-class="msg" class-name="tab-bar-icon"></svg-icon>
       </template>
-    </van-tabbar-item>
+    </van-tabbar-item> -->
 
     <van-tabbar-item to="/user" name="My">
       <span class="tab-bar-txt">我的</span>
@@ -41,15 +41,16 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
 const route = useRoute()
 
-const active = ref( 0 )
+const active = ref(0)
 
-onMounted( () => {
+onMounted(() => {
   active.value = route.name
-} )
+})
 
-async function tabChange( name ) {}
+async function tabChange(name){}
 </script>
 
 <style lang="scss" scoped>

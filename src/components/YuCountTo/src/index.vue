@@ -7,7 +7,7 @@ import { reactive, computed, watch, onMounted, unref, toRefs, ref, defineCompone
 import { isNumber } from '@/utils/validate'
 import { requestAnimationFrame, cancelAnimationFrame } from './requestAnimationFrame.js'
 
-export default defineComponent( {
+export default defineComponent({
   name : 'YuCountTo',
   props : {
     startVal : {
@@ -34,7 +34,7 @@ export default defineComponent( {
       type : Number,
       required : false,
       default : 0,
-      validator( value ) {
+      validator(value){
         return value >= 0
       }
     },
@@ -75,16 +75,16 @@ export default defineComponent( {
     },
     easingFn : {
       type : Function,
-      default( t, b, c, d ) {
-        return ( c * ( -Math.pow( 2, ( -10 * t ) / d ) + 1 ) * 1024 ) / 1023 + b
+      default(t, b, c, d){
+        return (c * (-Math.pow(2, (-10 * t) / d) + 1) * 1024) / 1023 + b
       }
     }
   },
   emits : ['mounted', 'callback'],
-  setup( props, { emit } ) {
-    const state = reactive( {
+  setup(props, { emit }){
+    const state = reactive({
       localStartVal : props.startVal,
-      displayValue : formatNumber( props.startVal ),
+      displayValue : formatNumber(props.startVal),
       printVal : null,
       paused : false,
       localDuration : props.duration,
@@ -94,19 +94,19 @@ export default defineComponent( {
       rAF : null,
       color : null,
       fontSize : '16px'
-    } )
+    })
 
-    const getCountDown = computed( () => {
+    const getCountDown = computed(() => {
       return props.startVal > props.endVal
-    } )
+    })
 
-    watch( [() => props.startVal, () => props.endVal], () => {
-      if ( props.autoplay ) {
+    watch([() => props.startVal, () => props.endVal], () => {
+      if (props.autoplay){
         start()
       }
-    } )
+    })
 
-    function start() {
+    function start(){
       const { startVal, duration, color, fontSize } = props
       state.localStartVal = startVal
       state.startTime = null
@@ -114,12 +114,12 @@ export default defineComponent( {
       state.paused = false
       state.color = color
       state.fontSize = fontSize
-      state.rAF = requestAnimationFrame( count )
+      state.rAF = requestAnimationFrame(count)
     }
 
-    // eslint-disable-next-line no-unused-vars
-    function pauseResume() {
-      if ( state.paused ) {
+    //eslint-disable-next-line no-unused-vars
+    function pauseResume(){
+      if (state.paused){
         resume()
         state.paused = false
       } else {
@@ -128,92 +128,92 @@ export default defineComponent( {
       }
     }
 
-    function pause() {
-      cancelAnimationFrame( state.rAF )
+    function pause(){
+      cancelAnimationFrame(state.rAF)
     }
 
-    function resume() {
+    function resume(){
       state.startTime = null
       state.localDuration = +state.remaining
       state.localStartVal = +state.printVal
-      requestAnimationFrame( count )
+      requestAnimationFrame(count)
     }
 
-    // eslint-disable-next-line no-unused-vars
-    function reset() {
+    //eslint-disable-next-line no-unused-vars
+    function reset(){
       state.startTime = null
-      cancelAnimationFrame( state.rAF )
-      state.displayValue = formatNumber( props.startVal )
+      cancelAnimationFrame(state.rAF)
+      state.displayValue = formatNumber(props.startVal)
     }
 
-    function count( timestamp ) {
+    function count(timestamp){
       const { useEasing, easingFn, endVal } = props
-      if ( !state.startTime ) state.startTime = timestamp
+      if (!state.startTime) state.startTime = timestamp
       state.timestamp = timestamp
       const progress = timestamp - state.startTime
       state.remaining = state.localDuration - progress
 
-      if ( useEasing ) {
-        if ( unref( getCountDown ) ) {
+      if (useEasing){
+        if (unref(getCountDown)){
           state.printVal =
-            state.localStartVal - easingFn( progress, 0, state.localStartVal - endVal, state.localDuration )
+            state.localStartVal - easingFn(progress, 0, state.localStartVal - endVal, state.localDuration)
         } else {
-          state.printVal = easingFn( progress, state.localStartVal, endVal - state.localStartVal, state.localDuration )
+          state.printVal = easingFn(progress, state.localStartVal, endVal - state.localStartVal, state.localDuration)
         }
       } else {
-        if ( unref( getCountDown ) ) {
-          state.printVal = state.localStartVal - ( state.localStartVal - endVal ) * ( progress / state.localDuration )
+        if (unref(getCountDown)){
+          state.printVal = state.localStartVal - (state.localStartVal - endVal) * (progress / state.localDuration)
         } else {
-          state.printVal = state.localStartVal + ( endVal - state.localStartVal ) * ( progress / state.localDuration )
+          state.printVal = state.localStartVal + (endVal - state.localStartVal) * (progress / state.localDuration)
         }
       }
-      if ( unref( getCountDown ) ) {
+      if (unref(getCountDown)){
         state.printVal = state.printVal < endVal ? endVal : state.printVal
       } else {
         state.printVal = state.printVal > endVal ? endVal : state.printVal
       }
-      state.displayValue = formatNumber( state.printVal )
-      if ( progress < state.localDuration ) {
-        state.rAF = requestAnimationFrame( count )
+      state.displayValue = formatNumber(state.printVal)
+      if (progress < state.localDuration){
+        state.rAF = requestAnimationFrame(count)
       } else {
-        emit( 'callback' )
+        emit('callback')
       }
     }
 
-    function formatNumber( num ) {
+    function formatNumber(num){
       const { decimals, decimal, separator, suffix, prefix } = props
-      num = Number( num ).toFixed( decimals )
+      num = Number(num).toFixed(decimals)
       num += ''
-      const x = num.split( '.' )
+      const x = num.split('.')
       let x1 = x[0]
       const x2 = x.length > 1 ? decimal + x[1] : ''
       const rgx = /(\d+)(\d{3})/
-      if ( separator && !isNumber( separator ) ) {
-        while ( rgx.test( x1 ) ) {
-          x1 = x1.replace( rgx, '$1' + separator + '$2' )
+      if (separator && !isNumber(separator)){
+        while (rgx.test(x1)){
+          x1 = x1.replace(rgx, '$1' + separator + '$2')
         }
       }
       return prefix + x1 + x2 + suffix
     }
 
-    onMounted( () => {
-      if ( props.autoplay ) {
+    onMounted(() => {
+      if (props.autoplay){
         start()
       }
-      emit( 'mounted' )
-    } )
+      emit('mounted')
+    })
 
-    const styleObj = ref( {
+    const styleObj = ref({
       color : props.color,
       fontSize : props.fontSize
-    } )
+    })
 
     return {
       styleObj,
-      ...toRefs( state )
+      ...toRefs(state)
     }
   }
-} )
+})
 </script>
 
 <style scoped></style>

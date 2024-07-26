@@ -8,19 +8,19 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { ConfigProvider } from 'vant'
-// import { useI18n } from 'vue-i18n'
-// import { useAppStore } from '@/store'
+//import { useI18n } from 'vue-i18n'
+//import { useAppStore } from '@/store'
 
-export default defineComponent( {
+export default defineComponent({
   name : 'App',
   components : {
     [ConfigProvider.name] : ConfigProvider
   },
-  setup() {
-    const theme = ref( 'light' )
+  setup(){
+    const theme = ref('light')
     return {
       theme
     }
   }
-} )
+})
 </script>

@@ -280,15 +280,15 @@ module.exports = {
       before : false,
       after : true
     }],
-    'space-before-blocks' : [2, 'always'],
+    'space-before-blocks' : [2, 'never'],
     'space-before-function-paren' : [2, 'never'],
-    'space-in-parens' : [2, 'always'],
+    'space-in-parens' : [2, 'never'],
     'space-infix-ops' : 2,
     'space-unary-ops' : [2, {
       words : true,
       nonwords : false
     }],
-    'spaced-comment' : [2, 'always', {
+    'spaced-comment' : [2, 'never', {
       markers : ['global', 'globals', 'eslint', 'eslint-disable', '*package', '!', ',']
     }],
     'template-curly-spacing' : [2, 'never'],

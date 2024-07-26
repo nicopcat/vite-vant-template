@@ -22,12 +22,12 @@ import { useTagsViewStore } from '@/store'
 const route = useRoute()
 const tagsViewStore = useTagsViewStore()
 
-const key = computed( () => route.path )
-const cachedViews = computed( () => tagsViewStore.cachedViews )
+const key = computed(() => route.path)
+const cachedViews = computed(() => tagsViewStore.cachedViews)
 
-defineOptions( {
+defineOptions({
   name : 'AppMain'
-} )
+})
 </script>
 
 <style lang="scss" scoped>

@@ -48,7 +48,7 @@
 import { ref } from 'vue'
 import YuCard from '@/components/YuCard'
 import list from '@/views/components/list/index.vue'
-// import avatar from '@/assets/imgs/avatar.png'
+//import avatar from '@/assets/imgs/avatar.png'
 import zcAvatar from '@/assets/imgs/zc-avatar.jpg'
 import jbAvatar from '@/assets/imgs/jb-avatar.jpg'
 import ttAvatar from '@/assets/imgs/tt-avatar.jpg'
@@ -111,8 +111,8 @@ const msgs = [
   }
 ]
 
-const notice = ref( data )
-const friendNotice = ref( msgs )
+const notice = ref(data)
+const friendNotice = ref(msgs)
 </script>
 
 <style lang="scss" scoped>

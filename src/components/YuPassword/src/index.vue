@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-const props = defineProps( {
+const props = defineProps({
   password : {
     type : String,
     default : ''
@@ -54,28 +54,28 @@ const props = defineProps( {
   },
   rules : {
     type : Array,
-    default() {
+    default(){
       return [{ required : true, message : '密码不能为空', trigger : 'onBlur' }]
     }
   }
-} )
+})
 
-const newPassword = ref( '' )
+const newPassword = ref('')
 
-const showPwd = ref( false )
+const showPwd = ref(false)
 
-const emit = defineEmits( ['toggleShowPwd'] )
+const emit = defineEmits(['toggleShowPwd'])
 
 watch(
   () => props.password,
-  ( newVal, oldVal ) => {
+  (newVal, oldVal) => {
     newPassword.value = props.password
   }
 )
 
-function toggleShowPwd() {
+function toggleShowPwd(){
   showPwd.value = !showPwd.value
-  emit( 'toggleShowPwd', showPwd.value )
+  emit('toggleShowPwd', showPwd.value)
 }
 </script>
 

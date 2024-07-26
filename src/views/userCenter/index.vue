@@ -23,8 +23,8 @@
               <img src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif" alt="" />
             </div>
             <div class="info fl">
-              <div class="user-name ellipsis">Hi,小灰灰</div>
-              <div class="phone ellipsis">123****8911</div>
+              <div class="user-name ellipsis">Hi, {{ userInfo.nickName ?? '尊贵的用户' }}</div>
+              <div class="phone ellipsis">{{ userInfo.phonenumber ?? '' }}</div>
             </div>
           </div>
         </template>
@@ -50,14 +50,14 @@
             </template>
           </list>
 
-          <list class="user-info-list">
+          <!-- <list class="user-info-list">
             <template #left>绑定信息</template>
             <template #right>
               <div>
                 <van-icon name="arrow" />
               </div>
             </template>
-          </list>
+          </list> -->
         </template>
       </yu-card>
 
@@ -81,7 +81,7 @@
         </template>
       </yu-card>
 
-      <yu-card class="user-info-card">
+      <!-- <yu-card class="user-info-card">
         <template #body>
           <list class="user-info-list">
             <template #left>个人信息</template>
@@ -108,7 +108,7 @@
             </template>
           </list>
         </template>
-      </yu-card>
+      </yu-card> -->
 
       <yu-card class="user-info-card">
         <template #body>
@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-// import { ref, reactive } from 'vue'
+//import { ref, reactive } from 'vue'
 import { showConfirmDialog } from 'vant'
 import YuCard from '@/components/YuCard'
 import list from '@/views/components/list/index.vue'
@@ -139,16 +139,18 @@ import { useUserStore } from '@/store'
 const userStore = useUserStore()
 const router = useRouter()
 
-async function loginOut() {
+const userInfo = userStore.info.user
+
+async function loginOut(){
   try {
-    await showConfirmDialog( {
+    await showConfirmDialog({
       title : '登出',
       message : '是否确认退出'
-    } )
-    userStore.LOGIN_OUT()
-    await router.push( `/login` )
+    })
+    userStore.logout()
+    await router.push(`/login`)
     window && window.location.reload()
-  } catch ( e ) {}
+  } catch (e){}
 }
 </script>
 
