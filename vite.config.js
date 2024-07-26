@@ -31,11 +31,11 @@ export default defineConfig(({ command, mode }) => {
       https: false,
       open: false,
       proxy: {
-        '/api': {
+        '/prod-api': {
           target: `http://192.168.101.174:8080/`,
           ws: false,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          rewrite: (path) => path.replace(/^\/prod-api/, '')
         }
       }
     },
