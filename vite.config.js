@@ -4,22 +4,22 @@ import path from 'path'
 import { getEnv, regExps } from './config'
 import { composePlugins } from './config/plugins'
 
-function resolve( dir ) {
-  return path.join( __dirname, dir )
+function resolve(dir) {
+  return path.join(__dirname, dir)
 }
 
 // https://vitejs.dev/config/
-export default defineConfig( ( { command, mode } ) => {
+export default defineConfig(({ command, mode }) => {
   console.log(mode);
   const root = process.cwd()
-  const env = getEnv( loadEnv( mode, process.cwd() ) )
+  const env = getEnv(loadEnv(mode, process.cwd()))
   const { VITE_PORT, VITE_PROXY_DOMAIN, VITE_PROXY_DOMAIN_REAL, VITE_LEGACY } = env
   return {
     root,
-    base : './', //
+    base: './', //
     resolve: {
       alias: {
-        '@': resolve( 'src' )
+        '@': resolve('src')
       },
       extensions: ['.js', '.json', '.ts', '.vue']
     },
@@ -31,14 +31,14 @@ export default defineConfig( ( { command, mode } ) => {
       port: VITE_PORT || 9527,
       https: false,
       open: false,
-      proxy: {
-        [VITE_PROXY_DOMAIN]: {
-          target: VITE_PROXY_DOMAIN_REAL,
-          ws: false,
-          changeOrigin: true,
-          rewrite: (path) => regExps(path, VITE_PROXY_DOMAIN)
-        }
-      }
+      // proxy: {
+      //   [VITE_PROXY_DOMAIN]: {
+      //     target: VITE_PROXY_DOMAIN_REAL,
+      //     ws: false,
+      //     changeOrigin: true,
+      //     rewrite: (path) => regExps(path, VITE_PROXY_DOMAIN)
+      //   }
+      // }
     },
 
     define: {
@@ -53,7 +53,7 @@ export default defineConfig( ( { command, mode } ) => {
     },
 
     build: {
-      path : './',
+      path: './',
       sourcemap: true,
       brotliSize: false,
       chunkSizeWarningLimit: 2500,
@@ -65,7 +65,7 @@ export default defineConfig( ( { command, mode } ) => {
       //     drop_debugger: true
       //   }
       // },
-      
+
       rollupOptions: {
         // output: {
         //   manualChunks(id) {
