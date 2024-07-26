@@ -37,7 +37,7 @@ export default defineConfig( ( { command, mode } ) => {
           ws: false,
           changeOrigin: true,
           pathRewrite: {
-            "^/api": "/",
+            rewrite: (path) => path.replace(/^\/api/, '')
           },
         }
       }
