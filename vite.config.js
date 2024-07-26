@@ -31,14 +31,14 @@ export default defineConfig(({ command, mode }) => {
       port: VITE_PORT || 9527,
       https: false,
       open: false,
-      // proxy: {
-      //   [VITE_PROXY_DOMAIN]: {
-      //     target: VITE_PROXY_DOMAIN_REAL,
-      //     ws: false,
-      //     changeOrigin: true,
-      //     rewrite: (path) => regExps(path, VITE_PROXY_DOMAIN)
-      //   }
-      // }
+      proxy: {
+        [VITE_PROXY_DOMAIN]: {
+          target: VITE_PROXY_DOMAIN_REAL,
+          ws: false,
+          changeOrigin: true,
+          rewrite: (path) => regExps(path, VITE_PROXY_DOMAIN)
+        }
+      }
     },
 
     define: {
