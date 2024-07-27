@@ -8,14 +8,14 @@ export function getEnvs() {
   const origin = window.location.origin
   let envStr = ''
   if (MODE === 'development') {
-    envStr = 'prod-api'
+    envStr = 'api'
   } else {
     if (origin.indexOf('fat') >= 0) {
       envStr = 'fat'
     } else if (origin.indexOf('uat') >= 0) {
       envStr = 'uat'
     } else {
-      envStr = 'prod-api'
+      envStr = 'api'
     }
   }
   return {

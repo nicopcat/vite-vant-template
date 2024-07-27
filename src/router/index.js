@@ -156,7 +156,7 @@ export const asyncRoutes = [
     path: '/',
     name: 'Home',
     component: NormalLayout,
-    redirect: '/index',
+    redirect: '/login',
     children: [
       {
         path: '/index',

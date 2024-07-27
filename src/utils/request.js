@@ -18,7 +18,7 @@ class HttpRequest {
 
   getBaseUrl() {
     const { envStr } = getEnvs()
-    const baseUrlStr = envStr === 'prod-api' ? import.meta.env.VITE_PROXY_DOMAIN : GLOBAL_DATA[envStr].baseUrl
+    const baseUrlStr = envStr === 'api' ? import.meta.env.VITE_PROXY_DOMAIN : GLOBAL_DATA[envStr].baseUrl
     return baseUrlStr
   }
 
