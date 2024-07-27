@@ -31,9 +31,8 @@ export default defineConfig(({ command, mode }) => {
       https: false,
       open: false,
       proxy: {
-        [VITE_PROXY_DOMAIN]: {
-          target: [VITE_PROXY_DOMAIN_REAL],
-          ws: false,
+        '/api': {
+          target: 'http://192.168.101.174:8080',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         }
