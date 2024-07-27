@@ -85,35 +85,91 @@ const repair = ref({})
 const partList = ref([])
 const userList = ref([])
 
-async function getDetail(){
+async function getDetail() {
   console.log(history.state?.id)
-  if (history.state?.id){
+  if (history.state?.id) {
     try {
-      const { data } = await getViewDetailInfo(history.state?.id)
+      // const { data } = await getViewDetailInfo(history.state?.id)
+
+      const data = {
+        repair: {
+          id: 25,
+          code: null,
+          faultReportTime: '2024-07-09 10:48:38',
+          reportUser: '超级管理员',
+          deviceId: null,
+          status: 'COMPLETED',
+          deviceCode: 'A-17',
+          deviceName: 'A-17',
+          deviceMark: null,
+          faultReportType: 'fault',
+          shutdown: '1',
+          faultLevel: 'A',
+          faultHour: '25330',
+          faultReportDescription: '测试停机',
+          repairUser: '1',
+          reportUserPhone: '15888888888',
+          shutdownStartTime: '2024-07-09 10:48:38',
+          shutdownEndTime: '2024-08-01 10:49:56',
+          remark: null,
+          acceptanceTime: null,
+          repairStartTime: null,
+          repairEndTime: null,
+          failureCause: '12',
+          solution: '的点点滴滴',
+        },
+        userList: [
+          {
+            id: 42,
+            repairId: null,
+            assistantId: 13,
+            assistantName: 'aaa',
+            assistanceHours: null,
+          },
+          {
+            id: 43,
+            repairId: null,
+            assistantId: 14,
+            assistantName: 'nic',
+            assistanceHours: null,
+          },
+        ],
+        partList: [
+          {
+            id: 73,
+            repairId: null,
+            sparePartId: 8,
+            sparePartCode: 'A-123',
+            sparePartName: 'A-123',
+            quantity: '1.0000',
+            remark: '23',
+          },
+        ],
+      }
       repair.value = data.repair
       partList.value = data.partList
       userList.value = data.userList
 
       console.log('repair', repair.value)
-    } catch (error){}
+    } catch (error) {}
     //请求详情url：
     ///api/eam/EamRepair/view/25
   }
 }
 getDetail()
 
-function check(params){
+function check(params) {
   console.log(params)
 }
 
-function edit(params){
+function edit(params) {
   //router.push('/eam/repair/detail')
 }
-function complete(params){
+function complete(params) {
   //router.push('/eam/repair/detail')
 }
 
-function cancel(params){
+function cancel(params) {
   console.log(params)
 }
 </script>

@@ -25,20 +25,20 @@ export default defineConfig(({ command, mode }) => {
 
     plugins: composePlugins(command, VITE_LEGACY),
 
-    // server: {
-    //   host: '0.0.0.0',
-    //   port: VITE_PORT || 9527,
-    //   https: false,
-    //   open: false,
-    //   proxy: {
-    //     '/prod-api': {
-    //       target: `http://192.168.101.174:8080/`,
-    //       ws: false,
-    //       changeOrigin: true,
-    //       rewrite: (path) => path.replace(/^\/prod-api/, '')
-    //     }
-    //   }
-    // },
+    server: {
+      host: '0.0.0.0',
+      port: VITE_PORT || 9527,
+      https: false,
+      open: false,
+      proxy: {
+        [VITE_PROXY_DOMAIN]: {
+          target: [VITE_PROXY_DOMAIN_REAL],
+          ws: false,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
+    },
 
     define: {
       // https://vue-i18n.intlify.dev/guide/advanced/optimization.html#quasar-cli
