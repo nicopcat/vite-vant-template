@@ -1,6 +1,6 @@
 <template>
   <div class="nav-bar">
-    <van-nav-bar>
+    <van-nav-bar fixed>
       <template #left>
         <span @click="router.go(-1)">
           <van-icon name="arrow-left" />
@@ -12,10 +12,10 @@
         <div class="icon-wrapper inline-block" @click="router.push('/')">
           <svg-icon icon-class="home" class-name="nav-bar-icon" />
         </div>
-        <div class="icon-wrapper inline-block" @click="router.push('/message')">
+        <!-- <div class="icon-wrapper inline-block" @click="router.push('/message')">
           <van-badge :content="5" max="99" />
           <svg-icon icon-class="msg" class-name="nav-bar-icon" />
-        </div>
+        </div> -->
         <div class="icon-wrapper inline-block" @click="router.push('/user')">
           <svg-icon icon-class="my" class-name="nav-bar-icon" />
         </div>
@@ -31,6 +31,7 @@ const router = useRouter()
 
 <style lang="scss" scoped>
 .nav-bar {
+  padding-bottom: 2.2rem;
   .van-icon,
   span {
     color: var(--yu-font-color--dark);

@@ -78,8 +78,8 @@ import { isObject } from '@/utils/validate'
 //} from 'vant'
 
 import Vant from 'vant'
-//const plugins = []
-//const components = []
+// const plugins = []
+// const components = []
 
 export function setupVant(app){
   for (const [key, component] of Object.entries(VantComponents)){

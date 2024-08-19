@@ -1,12 +1,12 @@
 <template>
   <div class="list-wrapper clearfix">
-    <div class="list-left fl">
+    <div class="list-left fl break-all">
       <slot name="left"></slot>
     </div>
     <div class="list-center fr">
       <slot name="center"></slot>
     </div>
-    <div class="list-right fr">
+    <div class="list-right fr break-all">
       <slot name="right"></slot>
     </div>
   </div>
@@ -16,7 +16,7 @@
 
 <style lang="scss" scoped>
 .list-wrapper {
-  height: 46px;
+  min-height: 46px;
   line-height: 46px;
   padding: 0 8px 0 19px;
   border-radius: 0;

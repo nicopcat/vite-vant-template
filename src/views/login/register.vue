@@ -124,7 +124,7 @@ const onSubmit = async values => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import './index.scss';
 .handle {
   text-align: center;

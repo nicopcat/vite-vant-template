@@ -42,7 +42,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.5",
     "@babel/eslint-parser": "^7.19.1",
-    "@vitejs/plugin-legacy": "^4.1.1",
+    "@vitejs/plugin-legacy": "^4.0.1",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",
     "@vue/eslint-config-prettier": "^7.0.0",
@@ -54,7 +54,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-vue": "^9.8.0",
-    "http-proxy-middleware": "^3.0.0",
     "husky": "^8.0.2",
     "less": "^4.2.0",
     "lint-staged": "^13.0.4",

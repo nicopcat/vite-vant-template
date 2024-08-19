@@ -1,5 +1,5 @@
 const defaultSetting = {
-  title : 'Vite Element Admin',
+  title : '智慧工厂',
   showSettings : true,
   tagsView : true,
   fixedHeader : true,

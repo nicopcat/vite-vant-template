@@ -1,312 +1,150 @@
 <template>
-  <div class="section">
-    <div class="content">
-      <div class="header">
-        <span>检验批信息</span>
+  <div>
+    <div class="content mt-1">
+      <div class="header py-2 flex flex-col">
+        <div class="px-2 font-bold">检验批信息</div>
       </div>
-      <van-cell-group>
-        <van-cell class="flex-col">
-          <template #title>
-            <span class="text-sm font-bold break-words">{{ data.qualityLotCode }}</span>
-          </template>
-          <template #label>
-            <div class="text">
-              <van-row justify="space-between">
-                <van-col span="8" class="text-title">检验类型</van-col>
-                <van-col span="16" class="text-res" style="text-align: end">{{ data.qualityLotType }}</van-col>
-              </van-row>
-              <van-row justify="space-between">
-                <van-col span="8" class="text-title">检验结果</van-col>
-                <van-col span="16" class="text-res" style="text-align: end">{{ data.qualityLotStatus }}</van-col>
-              </van-row>
-              <!-- <van-row justify="end" style="border-top: 1px solid #e3e3e3;margin-top: 10px;padding: 10px 0">
-                 <van-button type="primary" size="small">执行</van-button>
-              </van-row> -->
-            </div>
-          </template>
-        </van-cell>
-      </van-cell-group>
+      <van-cell class="flex-col">
+        <template #title>
+          <span class="text-sm font-bold break-words">{{ detailData.qualityLotCode }}</span>
+        </template>
+        <template #label>
+          <div class="text">
+            <van-row justify="space-between">
+              <van-col span="8" class="text-title">检验类型</van-col>
+              <van-col span="16" class="text-res" style="text-align: end">{{ detailData.qualityLotType }}</van-col>
+            </van-row>
+            <van-row justify="space-between">
+              <van-col span="8" class="text-title">检验结果</van-col>
+              <van-col span="16" class="text-res" style="text-align: end">{{ detailData.qualityLotStatus }}</van-col>
+            </van-row>
+          </div>
+        </template>
+      </van-cell>
     </div>
 
     <div class="m-2">
-      <van-button type="primary" size="small" style="margin-right: 10px">保 存</van-button>
-      <van-button type="success" size="small">提 交</van-button>
+      <van-button type="primary" size="small" style="margin-right: 10px" @click="save" :loading="saveBtnLoading"
+        >保 存</van-button
+      >
+      <van-button type="success" size="small" @click="submit" :loading="submitBtnLoading">提 交</van-button>
     </div>
 
     <div class="container">
       <!-- <div class="header">
         <span>检验批详情</span>
       </div> -->
-      <div class="box" v-for="(item, index) in data.formValue" :key="index">
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">检验项号</van-col>
-          <van-col span="16" class="text-res" style="text-align: end">{{ item.code }}</van-col>
-        </van-row>
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">检验项名称</van-col>
-          <van-col span="16" class="text-res" style="text-align: end">{{ item.name }}</van-col>
-        </van-row>
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">技术要求</van-col>
-          <van-col span="16" class="text-res" style="text-align: end">{{ item.specification }}</van-col>
-        </van-row>
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">测量方法</van-col>
-          <van-col span="16" class="text-res" style="text-align: end">{{ item.measureMethod }}</van-col>
-        </van-row>
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">0值</van-col>
-          <van-col span="16" class="text-res" style="text-align: end">{{ item.boolZeroValue }}</van-col>
-        </van-row>
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">1值</van-col>
-          <van-col span="16" class="text-res" style="text-align: end">{{ item.boolOneValue }}</van-col>
-        </van-row>
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">实测值</van-col>
-          <van-col span="16" class="text-res" style="text-align: end">{{ item.actual }}</van-col>
-        </van-row>
-        <van-row justify="space-between" class="box-item">
-          <van-col span="8" class="text-title">结果</van-col>
-          <van-col span="16" class="text-res">
-            <van-radio-group v-model="item.result" direction="horizontal" style="justify-content: flex-end">
+      <div class="box" v-for="(item, index) in detailData.formValue" :key="index">
+        <IndexList>
+          <template #left> 检验项号 </template>
+          <template #right> {{ item.code }} </template>
+        </IndexList>
+        <IndexList>
+          <template #left> 检验项名称 </template>
+          <template #right> {{ item.name }} </template>
+        </IndexList>
+        <IndexList>
+          <template #left> 技术要求 </template>
+          <template #right> {{ item.specification }} </template>
+        </IndexList>
+        <IndexList>
+          <template #left> 测量方法 </template>
+          <template #right> {{ item.measureMethod }} </template>
+        </IndexList>
+        <IndexList>
+          <template #left> 0值 </template>
+          <template #right> {{ item.boolZeroValue }} </template>
+        </IndexList>
+        <IndexList>
+          <template #left> 1值 </template>
+          <template #right> {{ item.boolOneValue }} </template>
+        </IndexList>
+        <IndexList>
+          <template #left> 实测值 </template>
+          <template #right> {{ item.actual }} </template>
+        </IndexList>
+        <IndexList>
+          <template #left> 结果 </template>
+          <template #right>
+            <van-radio-group v-model="item.passed" direction="horizontal" style="justify-content: flex-end">
               <van-radio name="1">合格</van-radio>
               <van-radio name="0">不合格</van-radio>
-            </van-radio-group>
-          </van-col>
-        </van-row>
+            </van-radio-group></template
+          >
+        </IndexList>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getExecuteInfo, saveQualityLot, submitQualityLot } from '@/api/qms/qualityLot'
+import { ResultEnum } from '@/config/constant'
+import { showFailToast, showSuccessToast } from 'vant'
+import { useRouter } from 'vue-router'
+import IndexList from '@/views/components/indexList/index'
 
-const data = ref({
-  qualityLotId : 53,
-  qualityLotCode : 'INJECTIONMOLDINGSTARTCHECKSTMO00000101',
-  qualityLotType : '注塑开工确认检验',
-  qualityLotStatus : '完成',
-  formValue : [
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 270,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 16,
-      actual : '',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-01',
-      name : '检查仓内是否存有余油',
-      type : '3',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '不合格',
-      boolOneValue : '合格',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    },
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 271,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 17,
-      actual : '11',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-02',
-      name : '记录罐车内前次油品类型（内燃机油、液压油、防冻液、基础油）',
-      type : '1',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '',
-      boolOneValue : '',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    },
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 272,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 18,
-      actual : '',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-03',
-      name : '检查罐体清洁度（杂质/水分）',
-      type : '3',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '不合格',
-      boolOneValue : '合格',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    },
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 273,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 19,
-      actual : '',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-04',
-      name : '隔舱设备，仓阀是否关闭',
-      type : '3',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '不合格',
-      boolOneValue : '合格',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    },
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 274,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 20,
-      actual : '',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-05',
-      name : '管线是否吹扫',
-      type : '3',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '不合格',
-      boolOneValue : '合格',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    },
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 275,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 21,
-      actual : '',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-06',
-      name : '是否静电接地',
-      type : '3',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '不合格',
-      boolOneValue : '合格',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    },
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 276,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 22,
-      actual : '',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-07',
-      name : '检查是否安装倒车止退器',
-      type : '3',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '不合格',
-      boolOneValue : '合格',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    },
-    {
-      createDept : null,
-      createBy : 1,
-      createTime : '2024-06-18 21:41:31',
-      updateBy : 1,
-      updateTime : '2024-06-18 21:41:31',
-      qualityLotId : 53,
-      qualityLotDetailId : 277,
-      qualityLotCode : null,
-      qualityPlanId : 18,
-      qualityPlanDetailId : 23,
-      actual : '',
-      remark : '',
-      passed : '1',
-      code : 'ZKJ-08',
-      name : '检查下泄油口是否关闭',
-      type : '3',
-      minValue : '0.0000',
-      maxValue : '0.0000',
-      boolZeroValue : '不合格',
-      boolOneValue : '合格',
-      isRemark : '0',
-      isRequire : '1',
-      specification : '',
-      measureMethod : '',
-      result : '1'
-    }
-  ]
+const router = useRouter()
+const detailData = ref({
+  qualityLotId: '',
+  qualityLotCode: '',
+  qualityLotType: '',
+  qualityLotStatus: '',
+  formValue: [],
 })
+
+const saveBtnLoading = ref(false)
+const submitBtnLoading = ref(false)
+
+onMounted(() => {
+  getDetail()
+})
+
+async function getDetail() {
+  console.log(history.state?.id)
+  if (history.state?.id) {
+    try {
+      const { data } = await getExecuteInfo(history.state?.id)
+      detailData.value = data
+
+      console.log(detailData.value)
+    } catch (error) {}
+  }
+}
+
+async function save() {
+  saveBtnLoading.value = true
+  detailData.value.qualityLotStatus = '检验中'
+  try {
+    const { code, msg } = await saveQualityLot(detailData.value)
+    if (code == ResultEnum.SUCCESS) {
+      showSuccessToast(msg || '保存成功')
+      setTimeout(() => {
+        router.back()
+      }, 600)
+    } else {
+      showFailToast('操作失败，请稍后再试...')
+    }
+  } catch (error) {}
+}
+
+async function submit() {
+  submitBtnLoading.value = true
+  detailData.value.qualityLotStatus = '完成'
+  detailData.value.formValue.result = detailData.value.formValue.passed
+  try {
+    const { code, msg } = await submitQualityLot(detailData.value)
+    if (code == ResultEnum.SUCCESS) {
+      showSuccessToast(msg || '提交成功')
+      setTimeout(() => {
+        router.back()
+      }, 600)
+    } else {
+      showFailToast('操作失败，请稍后再试...')
+    }
+  } catch (error) {}
+}
 </script>
 
 <style lang="less" scoped>
@@ -317,17 +155,9 @@ const data = ref({
 
   .header {
     width: 100%;
-    height: 1.5rem;
     background-color: #fff;
     border-left: 4px solid rgb(24, 92, 219);
     padding: 0.3rem 0;
-
-    span {
-      padding: 0.4rem 0.8rem;
-      color: #333;
-      font-size: 16px;
-      font-weight: bold;
-    }
   }
 
   .custom-title {

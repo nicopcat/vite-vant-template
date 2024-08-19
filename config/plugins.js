@@ -1,12 +1,11 @@
-
 import vue from '@vitejs/plugin-vue'
 // import eslintPlugin from 'vite-plugin-eslint'
-import DefineOptions from "unplugin-vue-define-options/vite"
+import DefineOptions from 'unplugin-vue-define-options/vite'
 import legacy from '@vitejs/plugin-legacy'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { viteMockServe } from 'vite-plugin-mock' // https://github.com/anncwb/vite-plugin-mock/blob/HEAD/README.zh_CN.md
 import { svgBuilder } from '../config/svgBuilder.js'
-import vueJsx from "@vitejs/plugin-vue-jsx"
+import vueJsx from '@vitejs/plugin-vue-jsx'
 
 export function composePlugins(command, VITE_LEGACY) {
   const prodMock = false
@@ -22,37 +21,48 @@ export function composePlugins(command, VITE_LEGACY) {
     // https://www.npmjs.com/package/@vitejs/plugin-legacy
     VITE_LEGACY
       ? legacy({
-        targets: ['defaults', 'ie >= 11', 'chrome 45'],
-        additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
-        renderLegacyChunks: true,
-        polyfills: [
-          'es.symbol',
-          'es.array.filter',
-          'es.promise',
-          'es.promise.finally',
-          'es/map',
-          'es/set',
-          'es.array.for-each',
-          'es.object.define-properties',
-          'es.object.define-property',
-          'es.object.get-own-property-descriptor',
-          'es.object.get-own-property-descriptors',
-          'es.object.keys',
-          'es.object.to-string',
-          'web.dom-collections.for-each',
-          'esnext.global-this',
-          'esnext.string.match-all'
-        ]
-      })
+          targets: [
+            '> 1%, last 1 version, ie >= 11',
+            'safari >= 10',
+            'Android > 39',
+            'Chrome >= 60',
+            'Safari >= 10.1',
+            'iOS >= 10.3',
+            'Firefox >= 54',
+            'Edge >= 15',
+          ],
+          additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+          polyfills: ['es.promise.finally', 'es/map', 'es/set'],
+          modernPolyfills: ['es.promise.finally'],
+          // renderLegacyChunks: true,
+          // polyfills: [
+          //   'es.symbol',
+          //   'es.array.filter',
+          //   'es.promise',
+          //   'es.promise.finally',
+          //   'es/map',
+          //   'es/set',
+          //   'es.array.for-each',
+          //   'es.object.define-properties',
+          //   'es.object.define-property',
+          //   'es.object.get-own-property-descriptor',
+          //   'es.object.get-own-property-descriptors',
+          //   'es.object.keys',
+          //   'es.object.to-string',
+          //   'web.dom-collections.for-each',
+          //   'esnext.global-this',
+          //   'esnext.string.match-all'
+          // ]
+        })
       : null,
     // https://www.npmjs.com/package/rollup-plugin-visualizer
-    lifecycle === "report"
+    lifecycle === 'report'
       ? visualizer({
-        open: true,
-        gzipSize: true,
-        brotliSize: true,
-        filename: "report.html"
-      })
+          open: true,
+          gzipSize: true,
+          brotliSize: true,
+          filename: 'report.html',
+        })
       : null,
 
     viteMockServe({
@@ -65,7 +75,7 @@ export function composePlugins(command, VITE_LEGACY) {
           import { setupProdMockServer } from './mockProdServer';
           setupProdMockServer();
         `,
-      logger: false
-    })
+      logger: false,
+    }),
   ]
 }

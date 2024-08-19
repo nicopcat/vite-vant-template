@@ -39,8 +39,6 @@ class CookieProxy{
     keys.forEach(key => {
       this.remove(key, false)
     })
-
-    console.log(this.getAll())
   }
 
   get(key, hasPrefix = true){

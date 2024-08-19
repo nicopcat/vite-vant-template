@@ -7,12 +7,12 @@
       </template>
     </van-tabbar-item>
 
-    <van-tabbar-item to="/find" name="Find">
+    <!-- <van-tabbar-item to="/find" name="Find">
       <span class="tab-bar-txt">发现</span>
       <template #icon>
         <svg-icon icon-class="find" class-name="tab-bar-icon"></svg-icon>
       </template>
-    </van-tabbar-item>
+    </van-tabbar-item> -->
 
     <!-- <van-tabbar-item class="add-item" to="/add">
       <template #icon>
@@ -50,7 +50,7 @@ onMounted(() => {
   active.value = route.name
 })
 
-async function tabChange(name){}
+async function tabChange(name) {}
 </script>
 
 <style lang="scss" scoped>

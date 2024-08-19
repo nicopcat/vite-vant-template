@@ -1,4 +1,3 @@
-
 import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
 import { getEnv, regExps } from './config'
@@ -10,6 +9,7 @@ function resolve(dir) {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
+  console.log(mode)
   const root = process.cwd()
   const env = getEnv(loadEnv(mode, process.cwd()))
   const { VITE_PORT, VITE_PROXY_DOMAIN, VITE_PROXY_DOMAIN_REAL, VITE_LEGACY } = env
@@ -18,9 +18,9 @@ export default defineConfig(({ command, mode }) => {
     base: './', //
     resolve: {
       alias: {
-        '@': resolve('src')
+        '@': resolve('src'),
       },
-      extensions: ['.js', '.json', '.ts', '.vue']
+      extensions: ['.js', '.json', '.ts', '.vue'],
     },
 
     plugins: composePlugins(command, VITE_LEGACY),
@@ -35,9 +35,9 @@ export default defineConfig(({ command, mode }) => {
           target: VITE_PROXY_DOMAIN_REAL,
           ws: false,
           changeOrigin: true,
-          rewrite: (path) => regExps(path, VITE_PROXY_DOMAIN)
-        }
-      }
+          rewrite: path => regExps(path, VITE_PROXY_DOMAIN),
+        },
+      },
     },
 
     define: {
@@ -47,8 +47,8 @@ export default defineConfig(({ command, mode }) => {
       __VUE_I18N_LEGACY_API__: false,
       __INTLIFY_PROD_DEVTOOLS__: false,
       __APP_INFO__: JSON.stringify({
-        version: '3.0.0'
-      })
+        version: '3.0.0',
+      }),
     },
 
     build: {
@@ -56,7 +56,7 @@ export default defineConfig(({ command, mode }) => {
       sourcemap: true,
       brotliSize: false,
       chunkSizeWarningLimit: 2500,
-
+      target: 'es2015',
       // minify: 'terser',
       // terserOptions: {
       //   compress: {
@@ -84,7 +84,7 @@ export default defineConfig(({ command, mode }) => {
         //     return `js/${fileName}/[name].[hash].js`
         //   }
         // }
-      }
-    }
+      },
+    },
   }
 })

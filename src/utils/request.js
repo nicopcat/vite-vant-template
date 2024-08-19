@@ -18,7 +18,7 @@ class HttpRequest {
 
   getBaseUrl() {
     const { envStr } = getEnvs()
-    const baseUrlStr = envStr === 'api' ? import.meta.env.VITE_PROXY_DOMAIN : GLOBAL_DATA[envStr].baseUrl
+    const baseUrlStr = envStr === 'dev' ? import.meta.env.VITE_PROXY_DOMAIN : GLOBAL_DATA[envStr].baseUrl
     return baseUrlStr
   }
 
@@ -28,8 +28,8 @@ class HttpRequest {
       timeout: this.timeout,
       withCredentials: this.withCredentials,
       headers: {
-        'Content-Type': 'application/json;charset=UTF-8'
-      }
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
     }
     return config
   }
@@ -101,7 +101,7 @@ class HttpRequest {
           showToast({
             message: '请检查您的网络是否正常',
             type: 'fail',
-            duration: 3 * 1000
+            duration: 3 * 1000,
           })
           return Promise.reject(new Error('请检查您的网络是否正常'))
         }
@@ -148,7 +148,7 @@ class HttpRequest {
             showToast({
               message: msg || 'Error',
               type: 'fail',
-              duration: 3 * 1000
+              duration: 3 * 1000,
             })
             return Promise.reject(new Error(msg || 'Error'))
           } else {
@@ -166,7 +166,7 @@ class HttpRequest {
         showToast({
           message: isTimeout ? '网络请求超时' : error.msg || '连接到服务器失败',
           type: 'fail',
-          duration: 2 * 1000
+          duration: 2 * 1000,
         })
         return Promise.reject(new Error(error.msg))
       }

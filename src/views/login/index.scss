@@ -1,8 +1,7 @@
 .body-container {
   .van-cell-group {
-    .van-cell:after {
-    }
     .van-cell__value {
+
       .van-field__body,
       .van-field__control {
         height: 36px;
@@ -10,8 +9,10 @@
       }
     }
   }
+
   .form-btn {
     margin: 40px auto 30px;
+
     .btn-item {
       display: block;
       width: 80%;

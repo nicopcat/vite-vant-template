@@ -155,9 +155,9 @@ const rules = {
 }
 
 const onSubmit = async values => {
-  router.push('/index')
-  return
+  // router.push('/index')
 
+  // return
   const params = {
     ...formState,
     clientId: import.meta.env.VITE_APP_CLIENT_ID,
