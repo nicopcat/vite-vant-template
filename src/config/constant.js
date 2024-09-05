@@ -13,13 +13,13 @@ export const GLOBAL_DATA = {
   //baseUrl : '/api'
   //},
   fat : {
-    baseUrl : '/api'
+    baseUrl : 'http://test-env.manasmes.gxjxcloud.com/api'
   },
   uat : {
-    baseUrl : '/api'
+    baseUrl : 'http://test-env.manasmes.gxjxcloud.com/api'
   },
   pro : {
-    baseUrl : '/api'
+    baseUrl : 'http://test-env.manasmes.gxjxcloud.com/api'
   }
 }
 

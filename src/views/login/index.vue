@@ -155,9 +155,6 @@ const rules = {
 }
 
 const onSubmit = async values => {
-  // router.push('/index')
-
-  // return
   const params = {
     ...formState,
     clientId: import.meta.env.VITE_APP_CLIENT_ID,
@@ -168,7 +165,8 @@ const onSubmit = async values => {
 
   if (c == ResultEnum.SUCCESS) {
     showSuccessToast(msg || '登录成功！')
-    router.push('/index')
+    // router.push('/index')
+    router.push({ name: 'Home' })
   } else {
     showFailToast('登录失败，请稍后再试...')
     requestCode()

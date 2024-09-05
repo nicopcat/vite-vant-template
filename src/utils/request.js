@@ -19,7 +19,6 @@ class HttpRequest {
   getBaseUrl() {
     const { envStr } = getEnvs()
     const baseUrlStr = envStr === 'dev' ? import.meta.env.VITE_PROXY_DOMAIN : GLOBAL_DATA[envStr].baseUrl
-    console.log(baseUrlStr);
     return baseUrlStr
   }
 
@@ -98,6 +97,7 @@ class HttpRequest {
     //请求拦截
     instance.interceptors.request.use(
       config => {
+        console.log(config.baseURL);
         if (!navigator.onLine) {
           showToast({
             message: '请检查您的网络是否正常',
