@@ -31,8 +31,8 @@ export const constantRoutes = [
     name: 'Login',
     component: () => import('@/views/login/index.vue'),
     meta: {
-      hidden: true,
       title: '登录',
+      noCache: true,
     },
   },
   {
