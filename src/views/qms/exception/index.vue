@@ -10,66 +10,54 @@
               </template>
               <template #label>
                 <IndexList>
-                  <template #left> 设备编号 </template>
-                  <template #right> {{ item.device }} </template>
+                  <template #left> 物料编码 </template>
+                  <template #right> {{ item.itemCode }} </template>
                 </IndexList>
                 <IndexList>
-                  <template #left> 设备名称 </template>
-                  <template #right> {{ item.deviceName }} </template>
+                  <template #left> 物料名称 </template>
+                  <template #right> {{ item.itemName }} </template>
                 </IndexList>
                 <IndexList>
-                  <template #left> 工单状态 </template>
-                  <template #right>{{ getLabel(dictObj['eam_maintenance_status'], item.status) }} </template>
+                  <template #left> 物料类型 </template>
+                  <template #right>{{ getLabel(dictObj['qms_item_type'], item.itemType) }} </template>
                 </IndexList>
                 <IndexList>
-                  <template #left> 工单类型 </template>
-                  <template #right>{{ getLabel(dictObj['eam_maintenance_type'], item.type) }} </template>
+                  <template #left> 异常编码 </template>
+                  <template #right> {{ item.exceptionTypeCode }} </template>
                 </IndexList>
                 <IndexList>
-                  <template #left> 维保人 </template>
-                  <template #right>{{ item.maintenanceUserName }} </template>
+                  <template #left> 异常编码描述 </template>
+                  <template #right> {{ item.exceptionTypeName }} </template>
                 </IndexList>
                 <IndexList>
-                  <template #left> 计划开始时间 </template>
-                  <template #right>{{ item.planStartTime }} </template>
+                  <template #left> 异常数量 </template>
+                  <template #right> {{ item.quantity }} </template>
                 </IndexList>
-                <IndexList>
-                  <template #left> 计划结束时间 </template>
-                  <template #right>{{ item.planEndTime }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 是否停机 </template>
-                  <template #right>{{ getLabel(dictObj['eam_yes_no'], item.isShutdown + '') }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 保养说明 </template>
-                  <template #right>{{ item.remark }} </template>
-                </IndexList>
+
                 <div class="mt-4">
+                  <van-button size="small" @click="view(item)" class="mr-2">查 看</van-button>
                   <van-button
                     size="small"
                     type="primary"
-                    @click="execute(item)"
+                    @click="handle(item)"
                     class="mr-2"
-                    v-if="item.status === 'PROGRESSING' || item.status === 'PENDING'"
-                    >执 行</van-button
+                    v-if="item.status === 'NEW'"
+                    >处 理</van-button
                   >
-                  <van-button size="small" @click="detail(item)" class="mr-2">详 情</van-button>
+                  <van-button v-if="item.status === 'PROCESSED'" size="small" class="mr-1" @click="close(item)"
+                    >关 闭</van-button
+                  >
                   <van-button
+                    v-if="item.status === 'RECHECK'"
                     type="success"
                     size="small"
                     class="mr-2"
-                    @click="accept(item)"
-                    v-if="item.status === 'PLAN'"
-                    >受 理</van-button
+                    @click="recheck(item)"
+                    >复 检</van-button
                   >
-                  <van-button
-                    type="danger"
-                    size="small"
-                    class="mr-2"
-                    @click="skip(item)"
-                    v-if="item.status === 'PROGRESSING' || item.status === 'PENDING'"
-                    >跳 过</van-button
+
+                  <van-button v-if="item.status === 'NEW'" size="small" class="mr-1" @click="forceClose(item)"
+                    >强制关闭</van-button
                   >
                 </div>
               </template>
@@ -78,6 +66,7 @@
         </van-list>
       </van-pull-refresh>
     </div>
+
     <van-dialog
       v-model:show="showClose"
       :title="backType === 1 ? '维修工单关闭' : '维修工单撤销'"
@@ -105,7 +94,6 @@
     </van-dialog>
 
     <van-floating-bubble axis="xy" v-model:offset="offset" icon="plus" @click="handleNew" />
-
     <NormalNavBar>
       <template #search>
         <svg-icon icon-class="search" class-name="nav-bar-icon" @click="showSearchSheet = true" />
@@ -113,16 +101,38 @@
     </NormalNavBar>
 
     <van-action-sheet v-model:show="showSearchSheet" @select="handleSearch">
-      <div class="min-h-[30vh] px-2 py-4 ">
+      <div class="min-h-[30vh] px-2 py-4">
         <van-form ref="queryFormRef" input-align="" :label-width="95">
-          <van-field v-model="queryParams.code" name="code" label="保养工单号" placeholder="保养工单号" />
-          <CustomPicker
-            label="工单类型"
-            :dataSource="dictObj['eam_maintenance_type']"
-            :defValue="queryParams.type"
-            :columnsField="{ text: 'dictLabel', value: 'dictValue' }"
-            @dataEvent="e => (queryParams.type = e.dictValue)"
+          <van-field v-model="queryParams.code" name="code" label="工单号" placeholder="工单号" />
+          <van-field v-model="queryParams.itemId" name="itemId" label="物料" placeholder="物料" />
+          <van-field v-model="queryParams.workCenterId" name="workCenterId" label="工作中心" placeholder="工作中心" />
+          <van-field v-model="queryParams.workStationId" name="workStationId" label="工位" placeholder="工位" />
+
+          <DateTimePicker
+            v-model="queryParams.createTimeStart"
+            label="发现开始时间"
+            :defTime="queryParams.createTimeStart"
+            @getTime="e => (queryParams.createTimeStart = e)"
           />
+          <DateTimePicker
+            v-model="queryParams.createTimeEnd"
+            label="发现结束时间"
+            :defTime="queryParams.createTimeEnd"
+            @getTime="e => (queryParams.createTimeEnd = e)"
+          />
+
+          <!-- <CustomSelect
+            label="设备编号"
+            filterOn
+            :dataSource="deviceList"
+            :defValue="queryParams.deviceId"
+            :labelProps="[
+              { header: '设备编号', keyName: 'code' },
+              { header: '设备名称', keyName: 'name' },
+            ]"
+            idKey="id"
+            @dataEvent="e => (queryParams.deviceId = e.id)"
+          /> -->
         </van-form>
         <div class="mt-4 p-2 flex flex-row">
           <van-button size="small" round type="primary" class="w-full mx-1" @click="handleSearch"> 查 询 </van-button>
@@ -136,48 +146,43 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getEamMaintenanceList, skipEamMaintenance, updatePending } from '@/api/eam/maintenance'
-import { getEamDeviceList } from '@/api/eam/device'
+import { getExceptionList } from '@/api/qms/exception'
 import { ResultEnum } from '@/config/constant'
 import { showFailToast, showSuccessToast } from 'vant'
 import IndexList from '@/views/components/indexList/index'
 import { getDict, getLabel } from '@/utils/dictUtils'
-import { showConfirmDialog } from 'vant'
+import { getEamDeviceList } from '@/api/eam/device'
 import { NormalNavBar } from '@/layout/components'
-import CustomPicker from '@/components/CustomPicker'
+import CustomSelect from '@/components/CustomSelect'
+import DateTimePicker from '@/components/DateTimePicker'
+import { parseTime } from '@/utils/index'
 
 const router = useRouter()
 
 onMounted(() => {
   getDicts()
   getDevices()
+
+  // 默认查询之前三天的数据
+  const thirdDay = new Date(new Date().setDate(new Date().getDate() - 3))
+  const thirdDayTime = parseTime(thirdDay, `{y}/{m}/{d}` + ' 00:00:00')
+
+  queryParams.createTimeEnd = parseTime(new Date(), '{y}/{m}/{d} {h}:{i}:{s}')
+  queryParams.createTimeStart = thirdDayTime
 })
 
 // 加载字典
 const dictObj = reactive({})
 const getDicts = async () => {
-  const eam_maintenance_type = await getDict('eam_maintenance_type')
-  const eam_maintenance_status = await getDict('eam_maintenance_status')
-  const eam_yes_no = await getDict('eam_yes_no')
-  dictObj['eam_maintenance_type'] = eam_maintenance_type
-  dictObj['eam_maintenance_status'] = eam_maintenance_status
-  dictObj['eam_yes_no'] = eam_yes_no
+  const qms_item_type = await getDict('qms_item_type')
+  const eam_repair_status_dict = await getDict('eam_repair_status')
+  dictObj['qms_item_type'] = qms_item_type
+  dictObj['eam_repair_status'] = eam_repair_status_dict
 }
 
-// 控制 FloatingBubble 的位置
 const h = window.innerHeight
 const w = window.innerWidth
 const offset = ref({ x: w - 80, y: h - 130 })
-
-const list = ref([])
-const total = ref(0)
-const loading = ref(false)
-const finished = ref(false)
-const refreshing = ref(false)
-const queryParams = reactive({
-  pageNum: 0,
-  pageSize: 10,
-})
 
 // 搜索
 const showSearchSheet = ref(false)
@@ -186,7 +191,7 @@ const initialParams = {
   pageNum: 0,
   pageSize: 10,
   code: '',
-  type: '',
+  deviceId: '',
 }
 function handleSearch() {
   list.value = []
@@ -206,15 +211,28 @@ async function getDevices() {
   } catch (error) {}
 }
 
+// 列表
+const list = ref([])
+const total = ref(0)
+const loading = ref(false)
+const finished = ref(false)
+const refreshing = ref(false)
+const queryParams = reactive({
+  pageNum: 0,
+  pageSize: 10,
+})
+
 // 上拉加载
 const onLoad = () => {
   loading.value = true
   queryParams.pageNum++
+
   getList()
 }
 
 // 下拉刷新
 const onRefresh = () => {
+  Object.assign(queryParams, initialParams)
   list.value = []
   queryParams.pageNum = 0
   // 清空列表数据
@@ -237,64 +255,41 @@ async function getList() {
   }
 
   loading.value = true
+
   try {
-    const { data } = await getEamMaintenanceList(queryParams)
+    const { data } = await getExceptionList(queryParams)
     list.value = [...list.value, ...data.rows]
     total.value = data.total
     // 加载状态结束
     loading.value = false
-    console.log(data)
   } catch (error) {}
 }
 
-/* 执行 */
-function execute(params) {
-  router.push({ name: 'MaintenanceExecute', state: { id: params.id } })
+function handleNew() {
+  router.push({ name: 'ExceptionNew' })
 }
 
-/* 详情 */
-function detail(item) {
-  router.push({ name: 'MaintenanceDetail', state: { id: item.id } }) // -> /user/123
+function view(params) {
+  // router.push({ name: 'CodeScanner' })
+
+  router.push({ name: 'ExceptionView', state: { id: params.id } }) //
 }
 
-/* 受理 */
-function accept(item) {
-  showConfirmDialog({
-    message: '是否确认受理工单？',
-  })
-    .then(async () => {
-      const { code, msg } = await updatePending(item.id)
-      if (code == ResultEnum.SUCCESS) {
-        showSuccessToast(msg || '提交成功')
-        onRefresh()
-      } else {
-        showFailToast('操作失败，请稍后再试...')
-      }
-    })
-    .catch(() => {
-      // on cancel
-    })
+function handle(params) {
+  router.push({ name: 'ExceptionHandle', state: { id: params.id } })
 }
 
-/* 跳过 */
-async function skip(item) {
-  showConfirmDialog({
-    message: '是否确认跳过工单？',
-  })
-    .then(async () => {
-      const { code, msg } = await skipEamMaintenance(item.id)
-      if (code == ResultEnum.SUCCESS) {
-        showSuccessToast(msg || '提交成功')
-        onRefresh()
-      } else {
-        showFailToast('操作失败，请稍后再试...')
-      }
-    })
-    .catch(() => {
-      // on cancel
-    })
+function close(params) {
+  router.push({ name: 'ExceptionRecheck', state: { id: params.id, type: 'close' } })
 }
 
+function foeceClose(params) {}
+
+function recheck(params) {
+  router.push({ name: 'ExceptionRecheck', state: { id: params.id, type: 'recheck' } })
+}
+
+// 关闭/撤销
 const showClose = ref(false)
 const closeFormValue = ref({
   id: '',
@@ -303,11 +298,16 @@ const closeFormValue = ref({
 })
 const closeFormRef = ref()
 const backType = ref(1)
+// async function close(params, type) {
+//   backType.value = type
+//   const { data: info } = await getAcceptDetailInfo(Number(params.id))
+//   Object.assign(closeFormValue.value, info)
+//   showClose.value = true
+// }
 
 const beforeCloseDialogClose = () => {
   return false
 }
-
 function confirmClose(e) {
   closeFormRef.value
     .validate(['remark'])
@@ -334,24 +334,24 @@ function confirmClose(e) {
     })
     .catch(error => {})
 }
-
-function handleNew() {
-  router.push({ name: 'MaintenanceNew' })
-}
 </script>
 
 <style lang="less" scoped>
 .content {
   width: 100%;
   margin: 1rem 0;
-  margin-bottom: 4rem;
   background-color: #f2f4f8;
+
   &-box {
     padding: 0.2rem 0;
     border-radius: 4px;
     background-color: #fff;
     margin: 0.6rem;
 
+    .van-row {
+      font-size: 15px;
+      padding: 0.4rem 0;
+    }
   }
 }
 </style>

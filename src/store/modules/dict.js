@@ -23,6 +23,13 @@ export const useDictStore = defineStore({
         return this.dict[type].find(item => item.dictValue == key)?.dictLabel ?? key
       }
     },
+    getStoredDictValue() {
+      return function (type, key) {
+        if (this.dict[type]) {
+          return this.dict[type].find(item => item.dictValue == key)?.dictLabel ?? key
+        }
+      }
+    },
   },
   actions: {
     setDict(dict) {

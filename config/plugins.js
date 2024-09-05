@@ -8,7 +8,7 @@ import { svgBuilder } from '../config/svgBuilder.js'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 
 export function composePlugins(command, VITE_LEGACY) {
-  const prodMock = false
+  const prodMock = true
   const lifecycle = process.env.npm_lifecycle_event
   return [
     vue(),
@@ -66,7 +66,7 @@ export function composePlugins(command, VITE_LEGACY) {
       : null,
 
     viteMockServe({
-      mockPath: 'mock',
+      mockPath: 'mockw',
       watchFiles: true,
       supportTs: false,
       localEnabled: command === 'serve',

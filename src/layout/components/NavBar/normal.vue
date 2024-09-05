@@ -1,6 +1,6 @@
 <template>
-  <div class="nav-bar">
-    <van-nav-bar fixed>
+  <div class="nav-bar-normal">
+    <van-nav-bar fixed :title="router.currentRoute.value.meta.title ?? ''">
       <template #left>
         <span @click="router.go(-1)">
           <van-icon name="arrow-left" />
@@ -9,15 +9,11 @@
       </template>
 
       <template #right>
-        <div class="icon-wrapper inline-block" @click="router.push('/')">
+        <!-- <div class="icon-wrapper inline-block" @click="router.push('/')">
           <svg-icon icon-class="home" class-name="nav-bar-icon" />
-        </div>
-        <!-- <div class="icon-wrapper inline-block" @click="router.push('/message')">
-          <van-badge :content="5" max="99" />
-          <svg-icon icon-class="msg" class-name="nav-bar-icon" />
         </div> -->
-        <div class="icon-wrapper inline-block" @click="router.push('/user')">
-          <svg-icon icon-class="my" class-name="nav-bar-icon" />
+        <div class="icon-wrapper inline-block">
+          <slot name="search"></slot>
         </div>
       </template>
     </van-nav-bar>
@@ -29,8 +25,8 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 </script>
 
-<style lang="scss" scoped>
-.nav-bar {
+<style lang="scss">
+.nav-bar-normal {
   padding-bottom: 2.2rem;
   .van-icon,
   span {
@@ -49,10 +45,10 @@ const router = useRouter()
     }
   }
   .nav-bar-icon {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     margin: 0 8px;
-    color: var(--yu-gray-color);
+    // color: var(--yu-gray-color);
     cursor: pointer;
   }
 }

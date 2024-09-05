@@ -14,3 +14,14 @@ export const getLabel = (dict, key) => {
   const r = dict.find(x => x.dictValue === key)
   return r ? r?.dictLabel : key
 }
+
+export const getDetailLabel = (dictName, value) => {
+  if(!value) return 
+  const store = useDictStore()
+  const r = store.getStoredDictValue(dictName, value)
+  if(!r){
+    store.getDictValue(dictName, value)
+    return value
+  }
+  return r ?? value
+}

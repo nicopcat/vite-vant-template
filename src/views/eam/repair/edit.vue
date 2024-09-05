@@ -151,6 +151,5 @@ async function onSubmit(values) {
   width: 100%;
   margin: 1.2rem 0;
   padding-bottom: 4rem;
-  // background-color: #f2f4f8;
 }
 </style>

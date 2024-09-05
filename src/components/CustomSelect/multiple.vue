@@ -1,29 +1,34 @@
 <template>
   <div class="van-cell-custom">
-    <!-- <van-field
-      v-model="inputValue"
-      :label="props.label"
-      :placeholder="'请选择' + props.label"
+    <van-floating-bubble
+      v-if="props.showFloatingBubble"
+      axis="xy"
+      v-model:offset="offset"
+      icon="plus"
       @click="showPicker = true"
-    /> -->
-    <van-floating-bubble v-if="props.showFloatingBubble" axis="xy"
- v-model:offset="offset" icon="plus" @click="showPicker = true" />
+    />
 
     <!-- <van-button class="w-full my-1" type="primary" icon="plus">{{props.label}}</van-button> -->
-    <van-action-sheet v-model:show="showPicker" :title="props.label">
-      <div class="content">
+    <van-action-sheet v-model:show="showPicker" :title="props.label" teleport="body">
+      <div class="content min-h-[50vh]">
         <div>
           <van-search v-model="filterVal" placeholder="请输入搜索关键词" input-align="center" />
         </div>
-        <van-list>
-          <van-checkbox-group v-model="checked" @change="onChange">
-            <van-cell v-for="item in filterList" :key="item[props.idKey]" :title="item[props.propKey]">
+        <van-list v-if="filterList && filterList.length > 0">
+          <van-checkbox-group v-model="checked" @change="onChange" shape="square">
+            <van-cell
+              v-for="(item, index) in filterList"
+              :key="item[props.idKey]"
+              :title="item[props.propKey]"
+              @click="toggle(index)"
+            >
               <template #right-icon>
-                <van-checkbox shape="square" :name="item[props.idKey]" :ref="el => (checkboxRefs[index] = el)" />
+                <van-checkbox :name="item[props.idKey]" :ref="el => (checkboxRefs[index] = el)" @click.stop />
               </template>
             </van-cell>
           </van-checkbox-group>
         </van-list>
+        <van-empty v-else description="暂无数据" />
       </div>
     </van-action-sheet>
   </div>
@@ -65,7 +70,7 @@ const props = defineProps({
     type: String,
     default: 'id',
   },
-  showFloatingBubble:{
+  showFloatingBubble: {
     type: Boolean,
     default: true,
   },
@@ -107,13 +112,11 @@ function handleDelete(val) {
   emits('dataEvent', checked.value, arr)
 }
 
+const toggle = index => {
+  checkboxRefs.value[index].toggle()
+}
+
 defineExpose({
   handleDelete,
 })
 </script>
-
-<style lang="scss" scoped>
-::v-deep.van-cell-custom .van-action-sheet {
-  min-height: 50% !important;
-}
-</style>

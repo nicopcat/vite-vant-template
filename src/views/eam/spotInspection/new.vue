@@ -26,7 +26,6 @@
           filterOn
           :dataSource="planList"
           :defValue="editData.qualityPlanId"
-          idKey="qualityPlanId"
           :labelProps="[
             { header: '方案号', keyName: 'code' },
             { header: '方案名称', keyName: 'name' },

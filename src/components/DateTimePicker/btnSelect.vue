@@ -10,7 +10,7 @@
       :rules="props.rules"
     /> -->
     <van-button type="primary"  size="small" @click="showPicker = true" >新 增</van-button>
-    <van-popup v-model:show="showPicker" position="bottom">
+    <van-popup v-model:show="showPicker" position="bottom" teleport="body">
       <van-picker-group
         :title="props.label"
         :tabs="['选择日期', '选择时间']"

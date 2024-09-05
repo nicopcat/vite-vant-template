@@ -8,6 +8,8 @@ import NProgress from '@/utils/progress'
 const whiteList = ['/login', '/register', '/forgot', '/404', '/401']
 router.beforeEach(async (to, from, next) => {
   NProgress.start()
+  // next()
+  // NProgress.done()
   document.title = getPageTitle(to.meta?.title)
   const hasToken = cookies.get(TOKEN)
   const userStore = useUserStore()

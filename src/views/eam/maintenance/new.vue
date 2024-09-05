@@ -2,9 +2,11 @@
   <div class="content">
     <van-tabs v-model:active="active">
       <van-tab title="新增保养工单" name="0">
+        <div class="flex flex-row my-3">
+          <van-button type="success" size="small" class="ml-3" @click="onSubmit('save')">提 交</van-button>
+        </div>
         <div class="m-2 py-2 rounded-sm bg-white">
           <van-form ref="formRef" input-align="right" validate-first scroll-to-error>
-            <!-- <van-cell-group inset> -->
             <div>
               <van-field
                 label-width="6.8em"
@@ -15,7 +17,7 @@
                 required
                 :rules="[{ required: true, message: '请选择保养计划区间' }]"
                 @click="showDatePicker = true"
-                readOnly
+                readonly
               />
               <van-calendar v-model:show="showDatePicker" type="range" @confirm="onDatePickerConfirm" />
             </div>
@@ -53,15 +55,13 @@
                 show-word-limit
               />
             </div>
-
-            <!-- </van-cell-group> -->
           </van-form>
-        </div>
-        <div class="mt-10 mx-1">
-          <van-button type="primary" class="w-full mb-2" @click="onSubmit('save')">提 交</van-button>
         </div>
       </van-tab>
       <van-tab title="保养设备" name="1">
+        <div class="flex flex-row my-3">
+          <van-button type="success" size="small" class="ml-3" @click="onSubmit('save')">提 交</van-button>
+        </div>
         <MultipleSelect
           :showFloatingBubble="active == 1"
           ref="multiplePartRef"
@@ -73,10 +73,11 @@
         />
         <div class="m-2 rounded-sm pb-12" v-if="deviceList && deviceList?.length > 0">
           <div class="bg-white my-2 py-2 px-4" v-for="part in deviceList" :key="part.id">
-            <IndexList>
+          <div class="font-bold text-md my-1">{{ part.code }}</div>
+            <!-- <IndexList>
               <template #left> 备件编号 </template>
               <template #right> {{ part.code }} </template>
-            </IndexList>
+            </IndexList> -->
             <IndexList>
               <template #left> 备件名称 </template>
               <template #right> {{ part.name }} </template>
@@ -95,11 +96,13 @@
       </van-tab>
       <van-tab title="时间列表" name="2">
         <div class="pb-10">
-          <div class="flex flex-row m-2 justify-start">
-            <DateTimeBtnPicker label="受理时间" @getTime="handleTime" />
-            <van-button size="small" type="primary" class="ml-2" @click="handleAutoDate">自动生成</van-button>
+          <div class="flex flex-row justify-between my-3">
+            <van-button type="success" size="small" class="ml-3" @click="onSubmit('save')">提 交</van-button>
+            <div class="flex flex-row mx-2">
+              <DateTimeBtnPicker class="ml-2" label="受理时间" @getTime="handleTime" />
+              <van-button size="small" type="primary" class="ml-2" @click="handleAutoDate">自动生成</van-button>
+            </div>
           </div>
-
           <div class="container">
             <div class="box" v-if="planDate && planDate?.length > 0">
               <van-row justify="space-between" class="text-sm text-slate-400">
@@ -227,7 +230,7 @@ function handleDelDate(e) {
 async function onSubmit() {
   formValue.value.deviceList = deviceList.value.map(x => x.id)
   formValue.value.planStartTimeList = planDate.value
-  
+
   formRef.value
     .validate()
     .then(async () => {

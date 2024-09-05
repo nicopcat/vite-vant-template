@@ -22,6 +22,26 @@ const useUserStore = defineStore({
       roles : []
     }
   },
+  getters: {
+    getToken(){
+      return this.token
+    },
+    getAvatar(){
+      return this.avatar
+    },
+    getNickname(){
+      return this.info?.user?.nickName
+    },
+    getPermissions() {
+      return this.permissions
+    },
+    getUserInfo() {
+      return this.info
+    },
+    getRoles() {
+      return this.roles
+    },
+  },
   actions : {
     setSiteId(id){
       this.siteId = id

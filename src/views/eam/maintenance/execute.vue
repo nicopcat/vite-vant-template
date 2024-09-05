@@ -7,7 +7,7 @@
             <van-button
               type="primary"
               size="small"
-              class="w-12 ml-3"
+              class="ml-3"
               @click="onStart"
               v-if="detailData?.startTime === null"
               >开 始</van-button
@@ -15,7 +15,7 @@
             <van-button
               type="primary"
               size="small"
-              class="w-12 ml-3"
+              class="ml-3"
               @click="onShutdown"
               v-if="detailData?.startTime !== null && detailData?.shutdownStartTime === null"
               >停 机</van-button
@@ -23,7 +23,7 @@
             <van-button
               type="primary"
               size="small"
-              class="w-12 ml-3"
+              class="ml-3"
               @click="onRestart"
               v-if="detailData?.shutdownStartTime !== null && detailData?.shutdownEndTime === null"
               >恢 复</van-button
@@ -31,12 +31,12 @@
             <van-button
               type="primary"
               size="small"
-              class="w-12 ml-3"
+              class="ml-3"
               @click="onSubmit('save')"
               v-if="detailData?.startTime !== null"
               >保 存</van-button
             >
-            <van-button type="success" size="small" class="w-12 ml-3" @click="onSubmit">完 成</van-button>
+            <van-button type="success" size="small" class="ml-3" @click="onSubmit">完 成</van-button>
           </div>
           <div class="box">
             <IndexList>
@@ -68,6 +68,41 @@
       </van-tab>
       <van-tab title="备件信息" name="备件信息">
         <div class="container">
+          <div class="flex flex-row my-3">
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onStart"
+              v-if="detailData?.startTime === null"
+              >开 始</van-button
+            >
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onShutdown"
+              v-if="detailData?.startTime !== null && detailData?.shutdownStartTime === null"
+              >停 机</van-button
+            >
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onRestart"
+              v-if="detailData?.shutdownStartTime !== null && detailData?.shutdownEndTime === null"
+              >恢 复</van-button
+            >
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onSubmit('save')"
+              v-if="detailData?.startTime !== null"
+              >保 存</van-button
+            >
+            <van-button type="success" size="small" class="ml-3" @click="onSubmit">完 成</van-button>
+          </div>
           <MultipleSelect
             :showFloatingBubble="active == '备件信息'"
             ref="multiplePartRef"
@@ -114,6 +149,41 @@
       </van-tab>
       <van-tab title="详情">
         <div class="container">
+          <div class="flex flex-row my-3">
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onStart"
+              v-if="detailData?.startTime === null"
+              >开 始</van-button
+            >
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onShutdown"
+              v-if="detailData?.startTime !== null && detailData?.shutdownStartTime === null"
+              >停 机</van-button
+            >
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onRestart"
+              v-if="detailData?.shutdownStartTime !== null && detailData?.shutdownEndTime === null"
+              >恢 复</van-button
+            >
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onSubmit('save')"
+              v-if="detailData?.startTime !== null"
+              >保 存</van-button
+            >
+            <van-button type="success" size="small" class="ml-3" @click="onSubmit">完 成</van-button>
+          </div>
           <van-form ref="formRef" input-align="right" scroll-to-error>
             <div class="box" v-for="(item, index) in detailData.formValue" :key="index">
               <IndexList>

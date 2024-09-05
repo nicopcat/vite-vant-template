@@ -4,65 +4,63 @@
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
           <div v-for="(item, index) in list" class="content-box" :key="index">
-            <van-cell-group inset>
-              <van-cell class="flex-col">
-                <template #title>
-                  <span class="font-bold break-words">{{ item.code }}</span>
-                </template>
-                <template #label>
-                  <IndexList>
-                    <template #left> 故障提报时间 </template>
-                    <template #right> {{ item.faultReportTime }} </template>
-                  </IndexList>
-                  <IndexList>
-                    <template #left> 提报人 </template>
-                    <template #right> {{ item.reportUser }} </template>
-                  </IndexList>
-                  <IndexList>
-                    <template #left> 状态 </template>
-                    <template #right>{{ getLabel(dictObj['eam_repair_status'], item.status) }} </template>
-                  </IndexList>
-                  <div class="mt-4">
-                    <van-button size="small" @click="view(item)" class="mr-2">查 看</van-button>
-                    <van-button
-                      size="small"
-                      type="primary"
-                      @click="edit(item)"
-                      class="mr-2"
-                      v-if="item.status === 'CLOSED' || item.status === 'COMPLETED'"
-                      >编 辑</van-button
-                    >
-                    <van-button
-                      v-if="item.status === 'WAITINGFORCOMFIRM'"
-                      type="success"
-                      size="small"
-                      class="mr-2"
-                      @click="accept(item)"
-                      >受 理</van-button
-                    >
-                    <van-button
-                      v-if="item.status === 'WAITINGFORREPAIR' || item.status === 'ONGOING'"
-                      type="success"
-                      size="small"
-                      class="mr-2"
-                      @click="complete(item)"
-                      >完 成</van-button
-                    >
-                    <van-button v-if="item.status === 'COMPLETED'" size="small" class="mr-1" @click="close(item, 1)"
-                      >关 闭</van-button
-                    >
-                    <van-button
-                      v-if="item.status === 'WAITINGFORCOMFIRM' || item.status === 'WAITINGFORREPAIR'"
-                      type="danger"
-                      size="small"
-                      class="mr-2"
-                      @click="close(item, 2)"
-                      >撤 销</van-button
-                    >
-                  </div>
-                </template>
-              </van-cell>
-            </van-cell-group>
+            <van-cell class="flex-col">
+              <template #title>
+                <span class="font-bold break-words">{{ item.code }}</span>
+              </template>
+              <template #label>
+                <IndexList>
+                  <template #left> 故障提报时间 </template>
+                  <template #right> {{ item.faultReportTime }} </template>
+                </IndexList>
+                <IndexList>
+                  <template #left> 提报人 </template>
+                  <template #right> {{ item.reportUser }} </template>
+                </IndexList>
+                <IndexList>
+                  <template #left> 状态 </template>
+                  <template #right>{{ getLabel(dictObj['eam_repair_status'], item.status) }} </template>
+                </IndexList>
+                <div class="mt-4">
+                  <van-button size="small" @click="view(item)" class="mr-2">查 看</van-button>
+                  <van-button
+                    size="small"
+                    type="primary"
+                    @click="edit(item)"
+                    class="mr-2"
+                    v-if="item.status === 'CLOSED' || item.status === 'COMPLETED'"
+                    >编 辑</van-button
+                  >
+                  <van-button
+                    v-if="item.status === 'WAITINGFORCOMFIRM'"
+                    type="success"
+                    size="small"
+                    class="mr-2"
+                    @click="accept(item)"
+                    >受 理</van-button
+                  >
+                  <van-button
+                    v-if="item.status === 'WAITINGFORREPAIR' || item.status === 'ONGOING'"
+                    type="success"
+                    size="small"
+                    class="mr-2"
+                    @click="complete(item)"
+                    >完 成</van-button
+                  >
+                  <van-button v-if="item.status === 'COMPLETED'" size="small" class="mr-1" @click="close(item, 1)"
+                    >关 闭</van-button
+                  >
+                  <van-button
+                    v-if="item.status === 'WAITINGFORCOMFIRM' || item.status === 'WAITINGFORREPAIR'"
+                    type="danger"
+                    size="small"
+                    class="mr-2"
+                    @click="close(item, 2)"
+                    >撤 销</van-button
+                  >
+                </div>
+              </template>
+            </van-cell>
           </div>
         </van-list>
       </van-pull-refresh>
@@ -95,6 +93,35 @@
     </van-dialog>
 
     <van-floating-bubble axis="xy" v-model:offset="offset" icon="plus" @click="handleNew" />
+    <NormalNavBar>
+      <template #search>
+        <svg-icon icon-class="search" class-name="nav-bar-icon" @click="showSearchSheet = true" />
+      </template>
+    </NormalNavBar>
+
+    <van-action-sheet v-model:show="showSearchSheet" @select="handleSearch">
+      <div class="min-h-[30vh] px-2 py-4">
+        <van-form ref="queryFormRef" input-align="" :label-width="95">
+          <van-field v-model="queryParams.code" name="code" label="维修工单号" placeholder="维修工单号" />
+          <CustomSelect
+            label="设备编号"
+            filterOn
+            :dataSource="deviceList"
+            :defValue="queryParams.deviceId"
+            :labelProps="[
+              { header: '设备编号', keyName: 'code' },
+              { header: '设备名称', keyName: 'name' },
+            ]"
+            idKey="id"
+            @dataEvent="e => (queryParams.deviceId = e.id)"
+          />
+        </van-form>
+        <div class="mt-4 p-2 flex flex-row">
+          <van-button size="small" round type="primary" class="w-full mx-1" @click="handleSearch"> 查 询 </van-button>
+          <van-button size="small" round type="" class="w-full mx-1" @click="resetSearch"> 重置条件 </van-button>
+        </div>
+      </div>
+    </van-action-sheet>
   </div>
 </template>
 
@@ -106,11 +133,15 @@ import { ResultEnum } from '@/config/constant'
 import { showFailToast, showSuccessToast } from 'vant'
 import IndexList from '@/views/components/indexList/index'
 import { getDict, getLabel } from '@/utils/dictUtils'
+import { getEamDeviceList } from '@/api/eam/device'
+import { NormalNavBar } from '@/layout/components'
+import CustomSelect from '@/components/CustomSelect'
 
 const router = useRouter()
 
 onMounted(() => {
   getDicts()
+  getDevices()
 })
 
 // 加载字典
@@ -122,12 +153,40 @@ const getDicts = async () => {
   dictObj['eam_repair_status'] = eam_repair_status_dict
 }
 
-const list = ref([])
-
 const h = window.innerHeight
 const w = window.innerWidth
-const offset = ref({ x: w - 80, y: h - 130 }) // 控制 FloatingBubble 的位置
+const offset = ref({ x: w - 80, y: h - 130 })
 
+// 搜索
+const showSearchSheet = ref(false)
+const queryFormRef = ref(null)
+const initialParams = {
+  pageNum: 0,
+  pageSize: 10,
+  code: '',
+  deviceId: '',
+}
+function handleSearch() {
+  list.value = []
+  queryParams.pageNum = 0
+  getList()
+  showSearchSheet.value = false
+}
+function resetSearch() {
+  Object.assign(queryParams, initialParams)
+}
+
+const deviceList = ref([])
+async function getDevices() {
+  try {
+    const { data } = await getEamDeviceList()
+    deviceList.value = data.rows ?? []
+  } catch (error) {}
+}
+
+// 列表
+const list = ref([])
+const total = ref(0)
 const loading = ref(false)
 const finished = ref(false)
 const refreshing = ref(false)
@@ -135,8 +194,6 @@ const queryParams = reactive({
   pageNum: 0,
   pageSize: 10,
 })
-
-const total = ref(0)
 
 // 上拉加载
 const onLoad = () => {
@@ -147,6 +204,7 @@ const onLoad = () => {
 
 // 下拉刷新
 const onRefresh = () => {
+  Object.assign(queryParams, initialParams)
   list.value = []
   queryParams.pageNum = 0
   // 清空列表数据
@@ -156,10 +214,6 @@ const onRefresh = () => {
   // 将 loading 设置为 true，表示处于加载状态
   loading.value = true
   onLoad()
-}
-
-function view(item) {
-  router.push({ name: 'RepairView', state: { id: item.id } }) // -> /user/123
 }
 
 async function getList() {
@@ -173,6 +227,7 @@ async function getList() {
   }
 
   loading.value = true
+
   try {
     const { data } = await getEamRepairList(queryParams)
     list.value = [...list.value, ...data.rows]
@@ -180,6 +235,12 @@ async function getList() {
     // 加载状态结束
     loading.value = false
   } catch (error) {}
+}
+
+function view(params) {
+  // router.push({ name: 'CodeScanner' })
+
+  router.push({ name: 'RepairView', state: { id: params.id } }) //
 }
 
 function edit(params) {
@@ -194,7 +255,11 @@ function complete(params) {
   router.push({ name: 'RepairComplete', state: { id: params.id } })
 }
 
-// 开始 关闭/撤销功能区  ----
+function handleNew() {
+  router.push({ name: 'RepairNew' })
+}
+
+// 关闭/撤销
 const showClose = ref(false)
 const closeFormValue = ref({
   id: '',
@@ -239,18 +304,9 @@ function confirmClose(e) {
     })
     .catch(error => {})
 }
-// 结束 关闭/撤销功能区  ----
-
-function handleNew() {
-  router.push({ name: 'RepairNew' })
-}
 </script>
 
 <style lang="less" scoped>
-page {
-  background-color: #f2f4f8;
-}
-
 .content {
   width: 100%;
   margin: 1rem 0;
@@ -262,31 +318,10 @@ page {
     background-color: #fff;
     margin: 0.6rem;
 
-    .custom-title {
-      font-size: 13px;
-      font-family: 'Helvetica', sans-serif;
-      font-weight: bold;
-    }
-
     .van-row {
       font-size: 15px;
       padding: 0.4rem 0;
     }
-
-    .text {
-      padding: 0.4rem 0;
-
-      &-title {
-      }
-
-      &-res {
-        color: #333;
-      }
-    }
   }
-}
-
-.van-cell {
-  padding: 0.4rem;
 }
 </style>

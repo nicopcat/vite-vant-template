@@ -2,7 +2,6 @@
   <div class="van-cell-custom">
     <van-field
       v-model="inputValue"
-      is-link
       readonly
       :label="props.label"
       :placeholder="'请选择' + props.label"
@@ -11,7 +10,7 @@
       :name="props.name"
       :rules="props.rules"
     />
-    <van-popup v-model:show="showPicker" position="bottom">
+    <van-popup v-model:show="showPicker" position="bottom" teleport="body">
       <van-picker
         :title="props.label"
         :columns="dataSource"
@@ -73,7 +72,7 @@ const showPicker = ref(false)
 const inputValue = ref('')
 
 const hasBothValues = computed(() => {
-  return props.dataSource.length > 0 && !!props.defValue
+  return props.dataSource.length > 0
 })
 
 watch(hasBothValues, newValue => {
@@ -82,6 +81,16 @@ watch(hasBothValues, newValue => {
     inputValue.value = item ? item[props.columnsField.text] : props.defValue
   }
 })
+
+watch(
+  () => props.defValue,
+  newValue => {
+    if (hasBothValues) {
+      const item = props.dataSource.find(x => x[props.columnsField.value] == props.defValue)
+      inputValue.value = item ? item[props.columnsField.text] : props.defValue
+    }
+  }
+)
 
 function onConfirm(value) {
   inputValue.value = value.selectedOptions[0][props.columnsField.text]

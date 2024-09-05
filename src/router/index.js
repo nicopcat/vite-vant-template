@@ -55,7 +55,16 @@ export const constantRoutes = [
       noCache: true,
     },
   },
-
+  {
+    path: '/codeSnanner',
+    name: 'CodeScanner',
+    hidden: true,
+    component: () => import('@/views/components/CodeScanner/index.vue'),
+    meta: {
+      title: '扫一扫',
+      noCache: true,
+    },
+  },
   {
     path: '/404',
     name: 'Error404',
@@ -210,7 +219,58 @@ export const asyncRoutes = [
       },
     ],
   },
-
+  {
+    path: '/qms/exception',
+    name: 'Exception',
+    component: NormalLayout,
+    redirect: '/qms/exception/index',
+    children: [
+      {
+        path: 'index',
+        name: 'Exception',
+        component: () => import('@/views/qms/exception/index'),
+        meta: {
+          title: '异常管理',
+          //icon: "Find",
+          noCache: true,
+          roles: ['admin', 'user'],
+        },
+      },
+      {
+        path: 'view',
+        name: 'ExceptionView',
+        component: () => import('@/views/qms/exception/view'),
+        meta: {
+          title: '异常查看',
+          //icon: "Find",
+          noCache: true,
+          roles: ['admin', 'user'],
+        },
+      },
+      {
+        path: 'new',
+        name: 'ExceptionNew',
+        component: () => import('@/views/qms/exception/new'),
+        meta: {
+          title: '异常新增',
+          //icon: "Find",
+          noCache: true,
+          roles: ['admin', 'user'],
+        },
+      },
+      {
+        path: 'recheck',
+        name: 'ExceptionRecheck',
+        component: () => import('@/views/qms/exception/recheckOrClose'),
+        meta: {
+          title: '异常复检/关闭',
+          //icon: "Find",
+          noCache: true,
+          roles: ['admin', 'user'],
+        },
+      },
+    ],
+  },
   {
     path: '/eam/repair',
     name: 'Repair',

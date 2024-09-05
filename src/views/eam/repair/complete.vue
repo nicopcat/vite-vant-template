@@ -2,6 +2,22 @@
   <div class="content">
     <van-tabs v-model:active="active">
       <van-tab title="完成页面" name="0">
+        <div class="flex flex-row my-3">
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onSubmit('save')"
+              >保 存</van-button
+            >
+            <van-button
+              type="success"
+              size="small"
+              class="ml-3"
+              @click="onSubmit"
+              >完 工</van-button
+            >
+          </div>
         <div class="m-2 py-2 rounded-sm bg-white">
           <van-form ref="formRef" input-align="right" validate-first scroll-to-error>
             <van-cell-group inset>
@@ -55,12 +71,28 @@
           </van-form>
         </div>
 
-        <div class="mt-10 mx-1">
+        <!-- <div class="mt-10 mx-1">
           <van-button type="primary" class="w-full mb-2" @click="onSubmit('save')">保 存</van-button>
           <van-button type="success" class="w-full mb-2" @click="onSubmit">完 工</van-button>
-        </div>
+        </div> -->
       </van-tab>
       <van-tab title="协助人" name="1">
+        <div class="flex flex-row my-3">
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onSubmit('save')"
+              >保 存</van-button
+            >
+            <van-button
+              type="success"
+              size="small"
+              class="ml-3"
+              @click="onSubmit"
+              >完 工</van-button
+            >
+          </div>
         <MultipleSelect
           :showFloatingBubble="active == 1"
           ref="multipleUserRef"
@@ -74,7 +106,7 @@
           @dataEvent="handleAssistantValue"
         />
 
-        <div class="m-2 rounded-sm pb-12">
+        <div class="m-2 rounded-sm pb-12" v-if="userList && userList?.length > 0">
           <div class="bg-white my-2 py-2 px-4" v-for="user in userList" :key="user.id">
             <IndexList>
               <template #left> 维修人名称 </template>
@@ -93,8 +125,26 @@
             </IndexList>
           </div>
         </div>
+        <van-empty v-else description="请添加维修人" />
+
       </van-tab>
       <van-tab title="选择备件" name="2">
+        <div class="flex flex-row my-3">
+            <van-button
+              type="primary"
+              size="small"
+              class="ml-3"
+              @click="onSubmit('save')"
+              >保 存</van-button
+            >
+            <van-button
+              type="success"
+              size="small"
+              class="ml-3"
+              @click="onSubmit"
+              >完 工</van-button
+            >
+          </div>
         <MultipleSelect
           :showFloatingBubble="active == 2"
           ref="multiplePartRef"
@@ -107,7 +157,7 @@
           @dataEvent="handlePartValue"
         />
 
-        <div class="m-2 rounded-sm pb-12">
+        <div class="m-2 rounded-sm pb-12" v-if="partList && partList?.length > 0">
           <div class="bg-white my-2 py-2 px-4" v-for="part in partList" :key="part.id">
             <IndexList>
               <template #left> 备件编号 </template>
@@ -133,6 +183,8 @@
             </IndexList>
           </div>
         </div>
+        <van-empty v-else description="请添加备件" />
+
       </van-tab>
     </van-tabs>
   </div>
@@ -262,7 +314,6 @@ function handleDeletePart(part) {
 
 async function onSave() {
   //校验必填
-
   try {
     const { code, msg } = await saveEamRepair({
       repair: repair.value,

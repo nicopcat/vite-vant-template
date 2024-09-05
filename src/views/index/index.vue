@@ -7,7 +7,7 @@
       <van-cell class="box-header font-bold" title="质量管理" value="" />
       <van-grid :border="false" :icon-size="38" clickable class="bg-white">
         <van-grid-item icon="description" icon-color="#2db755" text="检验批管理" @click="redirectTo('qualityLot')" />
-        <van-grid-item icon="warning-o" icon-color="#2db755" text="异常管理" @click="redirectTo(2)" />
+        <van-grid-item icon="warning-o" icon-color="#2db755" text="异常管理" @click="redirectTo('exception')" />
       </van-grid>
     </div>
 
@@ -33,6 +33,9 @@ function redirectTo(params) {
   switch (params) {
     case 'qualityLot':
       router.push('/qms/qualityLot/index')
+      break
+    case 'exception':
+      router.push('/qms/exception/index')
       break
 
     case 'repair':

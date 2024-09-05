@@ -5,11 +5,14 @@
       :label="props.label"
       :placeholder="'请选择' + props.label"
       @click="showPicker = true"
+      readonly
+      clickable
+      :label-width="labelWid"
       :required="props.required"
       :name="props.name"
       :rules="props.rules"
     />
-    <van-popup v-model:show="showPicker" position="bottom">
+    <van-popup v-model:show="showPicker" position="bottom" teleport="body">
       <van-picker-group
         :title="props.label"
         :tabs="['选择日期', '选择时间']"
@@ -28,6 +31,9 @@ import { ref, onMounted, watch } from 'vue'
 import { parseTime } from '@/utils/index'
 
 const props = defineProps({
+  labelWid: {
+    type: [String, Number], // Number + px
+  },
   label: {
     type: String,
     required: true,
@@ -58,7 +64,7 @@ const emits = defineEmits(['getTime'])
 onMounted(() => {
   currentDate.value = parseTime(props.defTime, `{y}-{m}-{d}`).split('-')
   currentTime.value = parseTime(props.defTime, `{h}:{i}:{s}`).split(':')
-  timeStr.value = typeof props.defTime === 'string' ? props.defTime : ''
+  timeStr.value = typeof props.defTime === 'string' ? props.defTime : parseTime(new Date())
 })
 
 watch(
@@ -71,7 +77,7 @@ watch(
     } else {
       currentDate.value = parseTime(val, `{y}-{m}-{d}`).split('-')
       currentTime.value = parseTime(val, `{h}:{i}:{s}`).split(':')
-      timeStr.value = typeof props.defTime === 'string' ? val : ''
+      timeStr.value = typeof props.defTime === 'string' ? val : parseTime(new Date())
     }
   }
 )
@@ -89,6 +95,6 @@ function confirmTime() {
 
 <style lang="scss" scoped>
 .van-cell-custom {
-  border-bottom: 1px solid rgba(238, 238, 238, 0.725);
+  border-bottom: 1px solid var(--van-cell-border-color);
 }
 </style>

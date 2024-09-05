@@ -19,7 +19,8 @@
             <IndexList>
               <template #left> 工单状态 </template>
               <template #right>
-                <span class="text-black"> {{ getLabel(dictObj['eam_repair_status'], repair?.status) }} </span>
+                <!-- <span class="text-black"> {{ getLabel(dictObj['eam_repair_status'], repair?.status) }} </span> -->
+                <span class="text-black"> {{ getDetailLabel('eam_repair_status', repair?.status) }} </span>
               </template>
             </IndexList>
             <IndexList>
@@ -85,7 +86,8 @@
             <IndexList>
               <template #left> 故障类型 </template>
               <template #right>
-                <span class="text-black"> {{ getLabel(dictObj['eam_repair_type'], repair?.faultReportType) }}</span>
+                <!-- <span class="text-black"> {{ getLabel(dictObj['eam_repair_type'], repair?.faultReportType) }}</span> -->
+                <span class="text-black"> {{ getDetailLabel('eam_repair_type', repair?.faultReportType) }}</span>
               </template>
             </IndexList>
             <IndexList>
@@ -162,10 +164,10 @@
 import { ref, onMounted, reactive } from 'vue'
 import { getViewDetailInfo } from '@/api/eam/repair'
 import IndexList from '@/views/components/indexList/index'
-import { getDict, getLabel } from '@/utils/dictUtils'
+import { getDict, getLabel,getDetailLabel } from '@/utils/dictUtils'
 
 onMounted(() => {
-  getDicts()
+  // getDicts()
 })
 
 // 加载字典

@@ -11,16 +11,16 @@
       :name="props.name"
       :rules="props.rules"
     />
-    <van-action-sheet v-model:show="showPicker" :title="props.label">
-      <div class="content">
+    <van-action-sheet v-model:show="showPicker" :title="props.label" teleport="body">
+      <div class="pb-6 min-h-[50vh]">
         <div v-if="props.filterOn">
           <van-search v-model="filterVal" placeholder="请输入搜索关键词" input-align="center" />
         </div>
-        <van-list>
-          <van-row class="mx-6">
+        <van-list v-if="filterList && filterList.length > 0">
+          <van-row class="mx-6 mb-2 ">
             <van-col
-              :span="Math.floor(24 / props.labelProps.length)"
-              class="font-bold"
+              :span="Math.floor(22 / props.labelProps.length)"
+              class="font-bold text-sm"
               v-for="(item, i) in props.labelProps"
               :key="i"
               >{{ item.header }}</van-col
@@ -47,6 +47,7 @@
             </template>
           </van-cell>
         </van-list>
+        <van-empty v-else description="暂无数据" />
       </div>
     </van-action-sheet>
   </div>
@@ -54,6 +55,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import {isArray} from '@/utils/validate'
 
 const props = defineProps({
   label: {
@@ -128,8 +130,8 @@ onMounted(() => {
 })
 
 const filterList = computed(() => {
-  if (!props.dataSource || !propKey.value) {
-    return
+  if (!props.dataSource || !propKey.value || !isArray(props.dataSource)) {
+    return []
   }
   return props.dataSource.filter(x => x[propKey.value].toLowerCase().includes(filterVal.value.toLowerCase()))
 })
@@ -138,6 +140,14 @@ watch(
   () => filterList.value,
   val => {
     const item = val.find(x => x[props.idKey] == props.defValue)
+    inputValue.value = item ? item[propKey.value] : props.defValue
+  }
+)
+
+watch(
+  () => props.defValue,
+  newValue => {
+    const item = filterList.value.find(x => x[props.idKey] == props.defValue)
     inputValue.value = item ? item[propKey.value] : props.defValue
   }
 )
@@ -151,7 +161,7 @@ function handleSelect(value) {
 </script>
 
 <style lang="scss" scoped>
-::v-deep.van-cell-custom .van-action-sheet {
-  min-height: 50% !important;
+.van-cell-custom {
+  border-bottom: 1px solid var(--van-cell-border-color);
 }
 </style>
