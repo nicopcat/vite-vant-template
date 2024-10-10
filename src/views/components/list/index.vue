@@ -1,12 +1,12 @@
 <template>
-  <div class="list-wrapper clearfix">
-    <div class="list-left fl break-all">
+  <div class="list-wrapper flex flex-row justify-between items-center">
+    <div class="list-left break-all">
       <slot name="left"></slot>
     </div>
-    <div class="list-center fr">
+    <div class="list-center">
       <slot name="center"></slot>
     </div>
-    <div class="list-right fr break-all">
+    <div class="list-right break-all">
       <slot name="right"></slot>
     </div>
   </div>
@@ -33,14 +33,17 @@
   .list-left {
     color: var(--yu-font-color--dark);
   }
-  .list-center {
-    color: var(--yu-font-color--dark);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+  // .list-center {
+  //   color: var(--yu-font-color--dark);
+  //   position: absolute;
+  //   top: 50%;
+  //   left: 50%;
+  //   transform: translate(-50%, -50%);
+  // }
   .list-right {
+    overflow: auto;
+    max-width: 60%;
+    line-height: 28px;
     color: var(--yu-gray-color);
   }
 }

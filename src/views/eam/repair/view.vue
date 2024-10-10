@@ -4,66 +4,40 @@
       <van-tab title="故障提报">
         <div class="container">
           <div class="box">
-            <IndexList>
-              <template #left> 设备编号 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.deviceCode }}</span>
-              </template>
+            <IndexList label="设备编号">
+              <span> {{ repair?.deviceCode }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 设备名称 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.deviceName }}</span>
-              </template>
+            <IndexList label="设备名称">
+              <span> {{ repair?.deviceName }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 工单状态 </template>
-              <template #right>
-                <!-- <span class="text-black"> {{ getLabel(dictObj['eam_repair_status'], repair?.status) }} </span> -->
-                <span class="text-black"> {{ getDetailLabel('eam_repair_status', repair?.status) }} </span>
-              </template>
+            <IndexList label="工单状态">
+              <!-- <span > {{ getLabel(dictObj['eam_repair_status'], repair?.status) }} </span> -->
+              <span> {{ getDetailLabel('eam_repair_status', repair?.status) }} </span>
             </IndexList>
-            <IndexList>
-              <template #left> 故障描述 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.faultReportDescription }}</span>
-              </template>
+            <IndexList label="故障描述">
+              <span> {{ repair?.faultReportDescription }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 严重程度 </template>
-              <template #right>
-                <span class="text-black"> {{ getLabel(dictObj['eam_repair_level'], repair?.faultLevel) }}</span>
-              </template>
+            <IndexList label="严重程度">
+              <span> {{ getDetailLabel('eam_repair_level', repair?.faultLevel) }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 是否停机 </template>
-              <template #right>
-                <span class="text-black"> {{ getLabel(dictObj['eam_yes_no'], repair?.shutdown) }}</span>
-              </template>
+            <IndexList label="是否停机">
+              <span> {{ getDetailLabel('eam_yes_no', repair?.shutdown) }}</span>
             </IndexList>
-            <IndexList :leftSpan="10">
-              <template #left> 故障累计时间(分钟) </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.faultHour }}</span>
-              </template>
+            <IndexList :leftSpan="10" label="故障累计时间(分钟)">
+              <span> {{ repair?.qualityFault }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 报修时间 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.faultReportTime }}</span>
-              </template>
+            <IndexList label="报修时间">
+              <span> {{ repair?.faultReportTime }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 报修人 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.reportUser }}</span>
-              </template>
+            <IndexList label="报修人">
+              <span> {{ repair?.reportUser }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 报修人电话 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.reportUserPhone }}</span>
-              </template>
+            <IndexList label="报修人电话">
+              <span> {{ repair?.reportUserPhone }}</span>
+            </IndexList>
+            <IndexList label="附件">
+              <BasicUpload v-if="imgOssIdsList?.length > 0" :max-count="0" :deletable="false" :ossId="imgOssIdsList" />
+              <div v-else>暂无</div>
             </IndexList>
           </div>
         </div>
@@ -71,36 +45,26 @@
       <van-tab title="故障处理">
         <div class="container">
           <div class="box">
-            <IndexList>
-              <template #left> 故障原因 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.failureCause }}</span>
-              </template>
+            <IndexList label="故障原因">
+              <span> {{ repair?.failureCause }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 解决方案 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.solution }}</span>
-              </template>
+            <IndexList label="解决方案">
+              <span> {{ repair?.solution }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 故障类型 </template>
-              <template #right>
-                <!-- <span class="text-black"> {{ getLabel(dictObj['eam_repair_type'], repair?.faultReportType) }}</span> -->
-                <span class="text-black"> {{ getDetailLabel('eam_repair_type', repair?.faultReportType) }}</span>
-              </template>
+            <IndexList label="故障类型">
+              <!-- <span > {{ getLabel(dictObj['eam_repair_type'], repair?.faultReportType) }}</span> -->
+              <span> {{ getDetailLabel('eam_repair_type', repair?.faultReportType) }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 开始停机时间 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.shutdownStartTime }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 结束停机时间 </template>
-              <template #right>
-                <span class="text-black"> {{ repair?.shutdownEndTime }}</span>
-              </template>
+            <div v-if="repair?.shutdownStartTime !== null">
+              <IndexList label="开始停机时间">
+                <span> {{ repair?.shutdownStartTime }}</span>
+              </IndexList>
+              <IndexList label="结束停机时间">
+                <span> {{ repair?.shutdownEndTime }}</span>
+              </IndexList>
+            </div>
+            <IndexList label="停机时间(min)" v-if="repair?.shutdownStartTime !== null && repair?.shutdownEndTime">
+              <span> {{ repair?.qualityShutdown }}</span>
             </IndexList>
           </div>
         </div>
@@ -128,29 +92,17 @@
       <van-tab title="备件信息">
         <div class="container" v-if="partList && partList?.length > 0">
           <div class="box" v-for="part in partList" :key="part.id">
-            <IndexList>
-              <template #left> 备件编号 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.sparePartCode }}</span>
-              </template>
+            <IndexList label="备件编号">
+              <span> {{ part?.sparePartCode }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 备件名称 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.sparePartName }}</span>
-              </template>
+            <IndexList label="备件名称">
+              <span> {{ part?.sparePartName }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 备件数量 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.quantity }}</span>
-              </template>
+            <IndexList label="备件数量">
+              <span> {{ part?.quantity }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 备件用途 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.remark }}</span>
-              </template>
+            <IndexList label="备件用途">
+              <span> {{ part?.remark }}</span>
             </IndexList>
           </div>
         </div>
@@ -164,7 +116,8 @@
 import { ref, onMounted, reactive } from 'vue'
 import { getViewDetailInfo } from '@/api/eam/repair'
 import IndexList from '@/views/components/indexList/index'
-import { getDict, getLabel,getDetailLabel } from '@/utils/dictUtils'
+import { getDict, getLabel, getDetailLabel } from '@/utils/dictUtils'
+import BasicUpload from '@/components/BasicUpload'
 
 onMounted(() => {
   // getDicts()
@@ -176,7 +129,7 @@ const getDicts = async () => {
   const eam_repair_type_dict = await getDict('eam_repair_type')
   const eam_repair_status_dict = await getDict('eam_repair_status')
   const eam_device_mark_dict = await getDict('eam_device_mark')
-  const eam_yes_no_dict = await getDict('eam_yes_no')
+  dictObj['eam_yes_no'] = await getDict('eam_yes_no')
   const eam_repair_level_dict = await getDict('eam_repair_level')
 
   dictObj['eam_repair_type'] = eam_repair_type_dict
@@ -190,6 +143,7 @@ const active = ref('')
 const repair = ref({})
 const partList = ref([])
 const userList = ref([])
+const imgOssIdsList = ref([])
 
 async function getDetail() {
   if (history.state?.id) {
@@ -198,11 +152,11 @@ async function getDetail() {
       repair.value = data.repair
       partList.value = data.partList
       userList.value = data.userList
+      imgOssIdsList.value = data.imgOssIds
     } catch (error) {}
   }
 }
 getDetail()
-
 </script>
 
 <style lang="less" scoped>
@@ -228,8 +182,4 @@ getDetail()
     }
   }
 }
-
-// .van-cell {
-//   padding: 0.4rem;
-// }
 </style>

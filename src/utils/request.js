@@ -97,7 +97,6 @@ class HttpRequest {
     //请求拦截
     instance.interceptors.request.use(
       config => {
-        console.log(config.baseURL);
         if (!navigator.onLine) {
           showToast({
             message: '请检查您的网络是否正常',
@@ -151,6 +150,12 @@ class HttpRequest {
               type: 'fail',
               duration: 3 * 1000,
             })
+
+            if (result.code === 401) {
+              userStore.logout()
+              router.push('/login')
+            }
+
             return Promise.reject(new Error(msg || 'Error'))
           } else {
             return result

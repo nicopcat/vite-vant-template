@@ -60,9 +60,9 @@ export function deletedEamMaintenance(ids) {
   })
 }
 
-export function skipEamMaintenance(ids) {
+export function skipEamMaintenance(ids, remark) {
   return http.request({
-    url: '/eam/EamMaintenance/skip/' + ids,
+    url: `/eam/EamMaintenance/skip/${ids}?remark=${remark}`,
     method: 'delete',
   })
 }
@@ -71,10 +71,11 @@ export function skipEamMaintenance(ids) {
  * 受理保养工单
  * @param data
  */
-export function updatePending(id) {
+export function updatePending(data) {
   return http.request({
-    url: '/eam/EamMaintenance/updatePending/' + id,
-    method: 'get',
+    url: '/eam/EamMaintenance/updatePending',
+    method: 'put',
+    data: data,
   })
 }
 
@@ -97,11 +98,10 @@ export function getExecuteInfo(id) {
  * 开始保养
  * @param data
  */
-export function startEamMaintenance(data) {
+export function startEamMaintenance(id) {
   return http.request({
-    url: '/eam/EamMaintenance/startMaintenance',
+    url: `/eam/EamMaintenance/startMaintenance/${id}`,
     method: 'put',
-    data: data,
   })
 }
 
@@ -109,11 +109,10 @@ export function startEamMaintenance(data) {
  * 结束保养
  * @param data
  */
-export function endEamMaintenance(data) {
+export function endEamMaintenance(id) {
   return http.request({
-    url: '/eam/EamMaintenance/endMaintenance',
+    url: '/eam/EamMaintenance/endMaintenance/' + id,
     method: 'put',
-    data: data,
   })
 }
 
@@ -121,11 +120,10 @@ export function endEamMaintenance(data) {
  * 停机
  * @param data
  */
-export function shutdown(data) {
+export function shutdown(id) {
   return http.request({
-    url: '/eam/EamMaintenance/shutdown',
+    url: '/eam/EamMaintenance/shutdown/' + id,
     method: 'put',
-    data: data,
   })
 }
 
@@ -133,11 +131,10 @@ export function shutdown(data) {
  * 停机重启
  * @param data
  */
-export function restart(data) {
+export function restart(id) {
   return http.request({
-    url: '/eam/EamMaintenance/restart',
+    url: '/eam/EamMaintenance/restart/' + id,
     method: 'put',
-    data: data,
   })
 }
 
@@ -162,5 +159,16 @@ export function submit(data) {
     url: '/eam/EamMaintenance/submit',
     method: 'put',
     data: data,
+  })
+}
+
+
+/**
+ * 确认保养工单
+ */
+export function confirmEamMaintenance(id) {
+  return http.request({
+    url: `/eam/EamMaintenance/confirm/${id}`,
+    method: 'put',
   })
 }

@@ -1,25 +1,39 @@
 <template>
   <div class="">
     <van-row justify="space-between py-1 items-baseline">
-      <van-col :span="props.leftSpan" class="text-sm text-slate-400 break-all mb-1">
-        <slot name="left"></slot>
+      <van-col :span="props.leftSpan" :class="['text-sm', 'text-slate-400', 'break-all', 'mb-1', 'p-0', requiredClass]">
+        <!-- <slot name="left"></slot> -->
+        <span>{{ props.label }}</span>
       </van-col>
       <!-- <div class="list-center fr">
       <slot name="center"></slot>
     </div> -->
       <van-col :span="24 - props.leftSpan" class="text-sm text-end text-black break-all">
-        <slot name="right"></slot>
+        <slot></slot>
       </van-col>
     </van-row>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
+  label: {
+    type: String,
+  },
   leftSpan: {
     type: Number,
     default: 10,
   },
+  required: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const requiredClass = computed(() => {
+  return props.required ? 'required' : ''
 })
 </script>
 
@@ -52,5 +66,11 @@ const props = defineProps({
   .list-right {
     color: var(--yu-gray-color);
   }
+}
+
+.required::after {
+  content: '*';
+  color: red;
+  margin-left: 0;
 }
 </style>

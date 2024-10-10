@@ -71,3 +71,10 @@ export function submitInspectionRecords(data) {
     data,
   })
 }
+
+export function getWorkOrderByQualityLotId(id) {
+  return http.request({
+    url: '/snsyhg/qualityLot/getWorkOrderByQualityLotId?id=' + id,
+    method: 'GET',
+  })
+}

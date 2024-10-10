@@ -6,14 +6,14 @@ export const getEnv = (envConf) => {
     VITE_PROXY_DOMAIN: '',
     VITE_PROXY_DOMAIN_REAL: '',
     VITE_ROUTER_HISTORY: '',
-    VITE_LEGACY: false,
-    VITE_GLOB_UPLOAD_URL:'',
+    VITE_LEGACY: true,
+    VITE_GLOB_UPLOAD_URL: '',
   }
 
   for (const envName of Object.keys(envConf)) {
     let realName = envConf[envName].replace(/\\n/g, '\n')
     realName =
-        realName === 'true' ? true : realName === 'false' ? false : realName
+      realName === 'true' ? true : realName === 'false' ? false : realName
 
     if (envName === 'VITE_PORT') {
       realName = Number(realName)

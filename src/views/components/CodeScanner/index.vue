@@ -3,7 +3,7 @@
     <div class="nav-bar-normal">
       <van-nav-bar fixed title="扫一扫">
         <template #left>
-          <span @click="router.go(-1)">
+          <span @click="handleBack">
             <van-icon name="arrow-left" />
             <span>返回</span>
           </span>
@@ -40,7 +40,7 @@
       <div class="text-center">
         <div v-if="loading" class="p-4 text-center text-white">加载中...</div>
         <div v-if="errorText" class="p-4 text-center text-white">{{ errorText }}</div>
-        <button type="button" class="button" @click="changeVideoInputDevice">
+        <button type="button" class="button" @click="changeVideoInputDevice" v-if="false">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -66,19 +66,8 @@
 <script setup>
 import { BrowserMultiFormatReader } from '@zxing/library'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import { showFailToast, showSuccessToast } from 'vant'
 
-const router = useRouter()
-
-const props = defineProps({
-  videoListIndex: {
-    type: Number,
-    default: 0,
-  },
-})
-
-const emit = defineEmits(['scaned', 'update:videoListIndex'])
+const emit = defineEmits(['scaned', 'update:cameraType'])
 
 const render = new BrowserMultiFormatReader()
 const loading = ref(false) // Loading
@@ -86,7 +75,7 @@ const errorText = ref('') // 错误信息
 const qrcodeText = ref('') // 扫描到的内容
 const deviceId = ref('') // 使用的设备ID
 const videoInputDeviceList = ref([]) // 设备列表
-
+const cameraType = ref(0)
 onMounted(() => {
   openScan()
 })
@@ -104,10 +93,8 @@ function openScan() {
       if (videoInputDevices.length) {
         videoInputDeviceList.value = videoInputDevices
         // 0 前置摄像头  1 后置摄像头
-        deviceId.value = videoInputDevices[props.videoListIndex]?.deviceId
-        if (!deviceId.value) {
-          deviceId.value = videoInputDevices[0]?.deviceId
-        }
+        deviceId.value = videoInputDevices[cameraType.value]?.deviceId
+
         decodeFromInputVideo()
       } else {
         // 未检测到摄像头
@@ -127,13 +114,8 @@ function decodeFromInputVideo() {
         const resultText = result.getText()
         render.stopContinuousDecode()
         qrcodeText.value = resultText
-        console.log(qrcodeText.value)
-        showSuccessToast(qrcodeText.value)
-
+        render.reset()
         emit('scaned', qrcodeText.value)
-        setTimeout(() => {
-          router.go(-1)
-        }, 2000)
       }
       if (loading.value) loading.value = false
     })
@@ -145,21 +127,25 @@ function decodeFromInputVideo() {
 function handleError(err) {
   loading.value = false
   if (err.message === 'Permission denied') {
-    errorText.value = '授权失败'
+    errorText.value = '授权失败，请确认已开启相机权限'
   } else {
-    errorText.value = '初始化异常请重试'
+    errorText.value = '初始化异常，请确认已开启相机权限'
+    render.stopContinuousDecode()
   }
 }
 
 // 切换摄像头
 const changeVideoInputDevice = () => {
-  if (props.videoListIndex < videoInputDeviceList.value.length - 1) {
-    emit('update:videoListIndex', props.videoListIndex + 1)
-  } else {
-    emit('update:videoListIndex', 0)
-  }
+  cameraType.value = cameraType.value == 1 ? 0 : 1
+  console.log(cameraType.value)
+  render.reset()
   // 初始化
   openScan()
+}
+
+function handleBack() {
+  render.reset()
+  emit('scaned', '')
 }
 
 defineExpose({
@@ -167,7 +153,7 @@ defineExpose({
 })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .container {
   position: absolute;
   top: 0px;

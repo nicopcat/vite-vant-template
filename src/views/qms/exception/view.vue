@@ -4,103 +4,35 @@
       <van-tab title="异常基础信息">
         <div class="container">
           <div class="box">
-            <IndexList>
-              <template #left> 异常单号 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.code }}</span>
-              </template>
+            <IndexList label="异常单号"> {{ detailValue?.code }} </IndexList>
+            <IndexList label="异常代码"> {{ detailValue?.exceptionTypeCode }} </IndexList>
+            <IndexList label="状态">
+              {{ getDetailLabel('qms_exception_status', detailValue?.status) }}
             </IndexList>
-            <IndexList>
-              <template #left> 异常代码 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.exceptionTypeCode }}</span>
-              </template>
+            <IndexList label="物料编码"> {{ detailValue?.itemCode }} </IndexList>
+            <IndexList label="物料名称"> {{ detailValue?.itemName }} </IndexList>
+            <IndexList label="物料类型">
+              {{ getDetailLabel('qms_item_type', detailValue?.itemType) }}
             </IndexList>
-            <IndexList>
-              <template #left> 状态 </template>
-              <template #right>
-                <span class="text-black"> {{ getDetailLabel('qms_exception_status', detailValue?.status) }} </span>
-              </template>
+            <IndexList label="总数量"> {{ detailValue?.quantityTotal }} </IndexList>
+            <IndexList label="异常数量"> {{ detailValue?.quantity }} </IndexList>
+            <IndexList label="严重程度">
+              {{ getDetailLabel('qms_severity_level', detailValue?.severityLevel) }}
             </IndexList>
-            <IndexList>
-              <template #left> 物料编码 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.itemCode }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 物料名称 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.itemName }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 物料类型 </template>
-              <template #right>
-                <span class="text-black"> {{ getDetailLabel('qms_item_type', detailValue?.itemType) }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 总数量 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.quantityTotal }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 异常数量 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.quantity }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 严重程度 </template>
-              <template #right>
-                <span class="text-black"> {{ getDetailLabel('qms_severity_level', detailValue?.severityLevel) }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 工序 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.operation }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 工位 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.workStation }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 发现人 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.createBy }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 发现时间 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.createTime }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 备注 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.remark }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 异常描述 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.description }}</span>
-              </template>
-            </IndexList>
-            <IndexList :leftSpan="6">
-              <template #left> 图片 </template>
-              <template #right>
-                <div :key="oss.url" v-for="oss in detailValue?.ossList">
-                  <a class="text-blue-700 break-all py-2" :href="oss.url">{{ oss.name }}</a>
-                </div>
-              </template>
+            <IndexList label="工序"> {{ detailValue?.operation }} </IndexList>
+            <IndexList label="工位"> {{ detailValue?.workStation }} </IndexList>
+            <IndexList label="发现人"> {{ detailValue?.createBy }} </IndexList>
+            <IndexList label="发现时间"> {{ detailValue?.createTime }} </IndexList>
+            <IndexList label="备注"> {{ detailValue?.remark }} </IndexList>
+            <IndexList label="异常描述"> {{ detailValue?.description }} </IndexList>
+            <IndexList label="图片" :leftSpan="5">
+              <BasicUpload
+                v-if="detailValue.pictureList && detailValue.pictureList?.length > 0"
+                :max-count="0"
+                :deletable="false"
+                :ossId="detailValue.pictureList"
+              />
+              <div v-else>暂无</div>
             </IndexList>
           </div>
         </div>
@@ -108,66 +40,29 @@
       <van-tab title="异常处理信息">
         <div class="container">
           <div class="box">
-            <IndexList>
-              <template #left> 决策 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.defectDecision }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 责任班组 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.responseClass }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 责任人 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.responseBy }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 处理意见 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.handleOpinion }}</span>
-              </template>
-            </IndexList>
+            <IndexList label="决策"> {{ detailValue?.defectDecision }} </IndexList>
+            <IndexList label="责任班组"> {{ detailValue?.responseClass }} </IndexList>
+            <IndexList label="责任人"> {{ detailValue?.responseBy }} </IndexList>
+            <IndexList label="原因描述"> {{ detailValue?.reasonDescription }} </IndexList>
+            <IndexList label="处理意见"> {{ detailValue?.handleOpinion }} </IndexList>
           </div>
         </div>
       </van-tab>
       <van-tab title="异常关闭信息">
         <div class="container">
           <div class="box">
-            <IndexList>
-              <template #left> 工时(min) </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.workingHours }}</span>
-              </template>
+            <IndexList label="工时(min)">
+              {{ Number(detailValue?.workingHours) === 0 ? '' : Number(detailValue?.workingHours) }}
             </IndexList>
-            <IndexList>
-              <template #left> 处理班组 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.handleClass }}</span>
-              </template>
+            <IndexList label="工时分类">
+              {{ getDetailLabel('qms_working_hours_type', detailValue?.workingHoursType) }}
             </IndexList>
-            <IndexList>
-              <template #left> 处理人 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.handleBy }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 处理时间 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.handleTime }}</span>
-              </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 处理描述 </template>
-              <template #right>
-                <span class="text-black"> {{ detailValue?.handleDescription }}</span>
-              </template>
-            </IndexList>
+            <IndexList label="责任人"> {{ detailValue?.responseBy }} </IndexList>
+
+            <IndexList label="处理班组"> {{ detailValue?.handleClass }} </IndexList>
+            <IndexList label="处理人"> {{ detailValue?.handleBy }} </IndexList>
+            <IndexList label="处理时间"> {{ detailValue?.handleTime }} </IndexList>
+            <IndexList label="处理描述"> {{ detailValue?.handleDescription }} </IndexList>
           </div>
         </div>
       </van-tab>
@@ -176,15 +71,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { getViewDetail } from '@/api/qms/exception'
 import { listByIds } from '@/api/system/oss'
 import IndexList from '@/views/components/indexList/index'
 import { getDetailLabel } from '@/utils/dictUtils'
+import BasicUpload from '@/components/BasicUpload'
 
-onMounted(() => {})
+onMounted(() => {
+  getDetail()
+})
 
-const active = ref('')
+const active = ref(0)
 const detailValue = ref({})
 
 async function getDetail() {
@@ -192,19 +90,16 @@ async function getDetail() {
     try {
       const { data } = await getViewDetail(history.state?.id)
       detailValue.value = data
-      console.log(data.pictureList && data.pictureList.length > 0)
       if (data.pictureList && data.pictureList.length > 0) {
         const ids = data.pictureList.join(',')
         const res = await listByIds(ids)
         detailValue.value.ossList = res.data.map(x => {
           return { name: x.fileName, url: x.url }
         })
-        console.log(detailValue.value.ossList)
       }
     } catch (error) {}
   }
 }
-getDetail()
 </script>
 
 <style lang="less" scoped>

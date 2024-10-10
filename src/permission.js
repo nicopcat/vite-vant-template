@@ -12,6 +12,7 @@ router.beforeEach(async (to, from, next) => {
   const hasToken = cookies.get(TOKEN)
   const userStore = useUserStore()
   const permissionStore = usePermissionStore()
+
   if (hasToken && hasToken !== 'undefined') {
     if (to.path === '/login') {
       next({ path: '/' })
@@ -22,8 +23,9 @@ router.beforeEach(async (to, from, next) => {
         next()
       } else {
         try {
-          const { roles } = await userStore.GetInfo()
+          const { roles, permissions } = await userStore.GetInfo()
           const accessRoutes = await permissionStore.SET_ROUTES(roles)
+          await permissionStore.SET_DIRECTIVE_ROLE(permissions) // 增加按钮权限
           accessRoutes.forEach(item => {
             router.addRoute(item)
           })

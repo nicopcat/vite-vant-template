@@ -9,9 +9,9 @@
       </template>
 
       <template #right>
-        <!-- <div class="icon-wrapper inline-block" @click="router.push('/')">
+        <div class="icon-wrapper inline-block" @click="router.push('/')">
           <svg-icon icon-class="home" class-name="nav-bar-icon" />
-        </div> -->
+        </div>
         <div class="icon-wrapper inline-block">
           <slot name="search"></slot>
         </div>

@@ -1,146 +1,167 @@
 <template>
   <div class="content">
     <van-tabs v-model:active="active">
-      <van-tab title="故障提报">
+      <van-tab title="保养详情">
         <div class="container">
           <div class="box">
-            <IndexList>
-              <template #left> 保养工单号 </template>
-              <template #right>
-                <span class="text-black"> {{ detailData?.code }}</span>
-              </template>
+            <IndexList label="保养工单号">
+              {{ detail?.code }}
             </IndexList>
-            <IndexList>
-              <template #left> 保养类型 </template>
-              <template #right>
-                <span class="text-black"> {{ detailData?.type }}</span>
-              </template>
+            <IndexList label="保养类型">
+              {{ getDetailLabel('eam_quality_plan_cycle', detail?.type) }}
             </IndexList>
-            <IndexList>
-              <template #left> 保养状态 </template>
-              <template #right>
-                <span class="text-black"> {{ detailData?.status }} </span>
-              </template>
+            <IndexList label="状态">
+              {{ getDetailLabel('eam_maintenance_status', detail?.status) }}
             </IndexList>
-            <IndexList>
-              <template #left> 设备编号 </template>
-              <template #right>
-                <span class="text-black"> {{ detailData?.device }}</span>
-              </template>
+            <IndexList label="设备编号">
+              {{ detail?.device }}
+            </IndexList>
+            <IndexList label="设备名称">
+              {{ detail?.deviceName }}
+            </IndexList>
+            <IndexList label="设备标识">
+              {{ detail?.deviceMark }}
+            </IndexList>
+
+            <IndexList label="辅助人">
+              {{ detail?.helpByName }}
+            </IndexList>
+            <IndexList label="是否合格">
+              <van-tag type="success" size="medium" v-if="detail?.result === '1'"> 合格 </van-tag>
+              <van-tag type="danger" size="medium" v-if="detail?.result === '0'"> 不合格 </van-tag>
+            </IndexList>
+            <IndexList label="创建时间">
+              {{ detail?.createTime }}
             </IndexList>
           </div>
         </div>
       </van-tab>
-      <van-tab title="备件信息">
-        <div class="container" v-if="detailData.sparePartList && detailData.sparePartList?.length > 0">
-          <div class="box" v-for="part in detailData.sparePartList" :key="part.id">
-            <IndexList>
-              <template #left> 备件编号 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.code }}</span>
-              </template>
+      <van-tab title="检验项">
+        <div class="container" v-if="detail?.startTime !== null">
+          <div class="box" v-for="(item, index) in detail.formValue" :key="index">
+            <IndexList label="检验项号"> {{ item.code }} </IndexList>
+            <IndexList label="检验项名称"> {{ item.name }} </IndexList>
+            <IndexList label="是否委外">
+              {{ getLabel(dictObj['eam_yes_no'], item?.isOutsourcing) }}
             </IndexList>
-            <IndexList>
-              <template #left> 备件名称 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.name }}</span>
-              </template>
+            <IndexList label="基准"> {{ item.specification }} </IndexList>
+            <IndexList label="方法"> {{ item.measureMethod }} </IndexList>
+            <IndexList label="部位"> {{ item.part }} </IndexList>
+            <IndexList label="时间/次"> {{ item.perTimes }} </IndexList>
+            <IndexList label="人数"> {{ item.headcount }} </IndexList>
+            <!-- <div v-if="item.type === '3'">
+              <IndexList label="0值"> {{ item.boolZeroValue }} </IndexList>
+              <IndexList label="1值"> {{ item.boolOneValue }} </IndexList>
+            </div> -->
+            <div v-if="item.type === '2'">
+              <IndexList label="最大值"> {{ item.maxValue }} </IndexList>
+              <IndexList label="最小值"> {{ item.minValue }} </IndexList>
+            </div>
+            <IndexList label="实测值" v-if="item.type === '1' || item.type === '2'">
+              <div class="flex flex-row justify-end items-center">
+                {{ item.actual }}
+                <van-icon v-if="item.passed === '0'" name="cross" color="#d03050" size="24" />
+                <van-icon v-if="item.passed === '1'" name="success" color="#0e7a0d" size="24" />
+              </div>
             </IndexList>
-            <IndexList>
-              <template #left> 备件数量 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.quantity }}</span>
-              </template>
+            <IndexList label="结果" v-if="item.type === '3'">
+              <div class="flex flex-row justify-end items-center">
+                <van-radio-group
+                  disabled
+                  v-model="item.passed"
+                  direction="horizontal"
+                  style="justify-content: flex-end"
+                >
+                  <van-radio name="1"> {{ item.boolOneValue }}</van-radio>
+                  <van-radio name="0">{{ item.boolZeroValue }}</van-radio>
+                </van-radio-group>
+                <div>
+                  <van-icon v-if="item.passed === '0'" name="cross" color="#d03050" size="24" />
+                  <van-icon v-if="item.passed === '1'" name="success" color="#0e7a0d" size="24" />
+                </div>
+              </div>
             </IndexList>
-            <IndexList>
-              <template #left> 备件用途 </template>
-              <template #right>
-                <span class="text-black"> {{ part?.remark }}</span>
-              </template>
+            <IndexList label="备注" v-if="item.isRemark === '1'">
+              {{ item.remark }}
+            </IndexList>
+            <IndexList label="示意图片" :leftSpan="5">
+              <BasicUpload
+                v-if="item.exampleOssIds?.length > 0"
+                :max-count="0"
+                :deletable="false"
+                :ossId="item.exampleOssIds"
+              />
+              <div v-else>暂无</div>
+            </IndexList>
+            <IndexList label="现场照片" v-if="item.isPhoto === '1'" :leftSpan="5">
+              <BasicUpload
+                v-if="item.spotOssIds?.length > 0"
+                :max-count="0"
+                :deletable="false"
+                :ossId="item.spotOssIds"
+              />
+              <div v-else>暂无</div>
             </IndexList>
           </div>
         </div>
         <van-empty v-else description="暂无数据" />
       </van-tab>
-      <van-tab title="详情">
-        <div class="container">
-          <div class="box" v-for="(item, index) in detailData.formValue" :key="index">
-            <IndexList>
-              <template #left> 检验项号 </template>
-              <template #right> {{ item.code }} </template>
+      <van-tab title="备件信息">
+        <div class="container" v-if="detail.sparePartList && detail.sparePartList?.length > 0">
+          <div class="box" v-for="part in detail.sparePartList" :key="part.id">
+            <IndexList label="备件编号">
+              <span> {{ part?.code }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 检验项名称 </template>
-              <template #right> {{ item.name }} </template>
+            <IndexList label="备件名称">
+              <span> {{ part?.name }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 技术要求 </template>
-              <template #right> {{ item.specification }} </template>
+            <IndexList label="备件数量">
+              <span> {{ part?.quantity }}</span>
             </IndexList>
-            <IndexList>
-              <template #left> 测量方法 </template>
-              <template #right> {{ item.measureMethod }} </template>
-            </IndexList>
-            <div v-if="item.type === '3'">
-              <IndexList>
-                <template #left> 0值 </template>
-                <template #right> {{ item.boolZeroValue }} </template>
-              </IndexList>
-              <IndexList>
-                <template #left> 1值 </template>
-                <template #right> {{ item.boolOneValue }} </template>
-              </IndexList>
-            </div>
-
-            <div v-if="item.type === '2'">
-              <IndexList>
-                <template #left> 最大值 </template>
-                <template #right> {{ item.maxValue }} </template>
-              </IndexList>
-              <IndexList>
-                <template #left> 最小值 </template>
-                <template #right> {{ item.minValue }} </template>
-              </IndexList>
-            </div>
-            <IndexList  >
-              <template #left> 实测值 </template>
-              <template #right> {{ item.actual }} </template>
-            </IndexList>
-            <IndexList>
-              <template #left> 结果 </template>
-              <template #right>
-                <van-radio-group v-model="item.passed" direction="horizontal" style="justify-content: flex-end">
-                  <van-radio name="1">合格</van-radio>
-                  <van-radio name="0">不合格</van-radio>
-                </van-radio-group></template
-              >
-            </IndexList>
-            <IndexList>
-              <template #left> 备注 </template>
-              <template #right> {{ item.remark }} </template>
+            <IndexList label="备件用途">
+              <span> {{ part?.remark }}</span>
             </IndexList>
           </div>
         </div>
+        <van-empty v-else description="暂无数据" />
       </van-tab>
     </van-tabs>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { getExecuteInfo } from '@/api/eam/maintenance'
 import IndexList from '@/views/components/indexList/index'
+import { getDict, getLabel, getDetailLabel } from '@/utils/dictUtils'
+import BasicUpload from '@/components/BasicUpload'
+import { getUserDetail } from '@/api/system/user'
 
-onMounted(() => {})
+onMounted(() => {
+  getDicts()
+})
+// 加载字典
+const dictObj = reactive({})
+const getDicts = async () => {
+  dictObj['eam_yes_no'] = await getDict('eam_yes_no')
+}
 
 const active = ref('')
-const detailData = ref()
+const detail = ref()
+
+async function getUser(id = 0) {
+  const { data } = await getUserDetail(id)
+  detail.value.helpByName = data.user.nickName
+}
 
 async function getDetail() {
   if (history.state?.id) {
     try {
       const { data } = await getExecuteInfo(history.state?.id)
-      detailData.value = data
+      detail.value = data
+      if (data.helpBy) {
+        getUser(data.helpBy)
+      }
     } catch (error) {}
   }
 }

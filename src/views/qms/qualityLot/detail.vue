@@ -15,55 +15,76 @@
               <van-col span="16" class="text-res" style="text-align: end">{{ detailData.qualityLotType }}</van-col>
             </van-row>
             <van-row justify="space-between">
-              <van-col span="8" class="text-title">检验结果</van-col>
+              <van-col span="8" class="text-title">检验批状态</van-col>
               <van-col span="16" class="text-res" style="text-align: end">{{ detailData.qualityLotStatus }}</van-col>
             </van-row>
+            <!-- <van-row justify="space-between">
+              <van-col span="8" class="text-title">检验结果</van-col>
+              <van-col span="16" class="text-res" style="text-align: end">{{ detailData.qualityLotStatus }}</van-col>
+            </van-row> -->
+            <div v-if="workOrderInfo">
+              <van-row justify="space-between">
+                <van-col span="8" class="text-title">成品物料名称</van-col>
+                <van-col span="16" class="text-res" style="text-align: end">{{ workOrderInfo.itemName }}</van-col>
+              </van-row>
+              <van-row justify="space-between">
+                <van-col span="8" class="text-title">成品批次 </van-col>
+                <van-col span="16" class="text-res" style="text-align: end">{{ workOrderInfo.batchNumber }}</van-col>
+              </van-row>
+              <van-row justify="space-between">
+                <van-col span="8" class="text-title"> 数量 </van-col>
+                <van-col span="16" class="text-res" style="text-align: end">{{ workOrderInfo.quantity }}</van-col>
+              </van-row>
+            </div>
           </div>
         </template>
       </van-cell>
     </div>
 
     <div class="container">
-      <!-- <div class="header">
-        <span>检验批详情</span>
-      </div> -->
       <div class="box" v-for="(item, index) in detailData.formValue" :key="index">
-        <IndexList>
-          <template #left> 检验项号 </template>
-          <template #right> {{ item.code }} </template>
+        <IndexList label="检验项号"> {{ item.code }} </IndexList>
+        <IndexList label="检验项名称"> {{ item.name }} </IndexList>
+        <IndexList label="技术要求"> {{ item.specification }} </IndexList>
+        <IndexList label="测量方法"> {{ item.measureMethod }} </IndexList>
+        <div v-if="item.type === '2'">
+          <IndexList label="最大值"> {{ item.boolZeroValue }} </IndexList>
+          <IndexList label="最小值"> {{ item.boolOneValue }} </IndexList>
+        </div>
+        <div v-if="item.type === '3'">
+          <IndexList label="0值"> {{ item.boolZeroValue }} </IndexList>
+          <IndexList label="1值"> {{ item.boolOneValue }} </IndexList>
+        </div>
+        <IndexList label="结果">
+          <div class="flex flex-row justify-end items-center">
+            <div>
+              <van-icon v-if="item.passed === '0'" name="cross" color="#d03050" size="24" />
+              <van-icon v-if="item.passed === '1'" name="success" color="#0e7a0d" size="24" />
+            </div>
+          </div>
         </IndexList>
-        <IndexList>
-          <template #left> 检验项名称 </template>
-          <template #right> {{ item.name }} </template>
+        <IndexList v-if="item.type === '1'" label="实测值" :required="item.isRequire === '1'">
+          {{ subItem.actual }}
         </IndexList>
-        <IndexList>
-          <template #left> 技术要求 </template>
-          <template #right> {{ item.specification }} </template>
+        <IndexList v-if="item.isSampling === '1'" label="采样数量" required>
+          {{ subItem.sampleSize }}
         </IndexList>
-        <IndexList>
-          <template #left> 测量方法 </template>
-          <template #right> {{ item.measureMethod }} </template>
+        <IndexList label="备注" v-if="item.isRemark === '1'">
+          {{ item.remark }}
         </IndexList>
-        <IndexList>
-          <template #left> 0值 </template>
-          <template #right> {{ item.boolZeroValue }} </template>
-        </IndexList>
-        <IndexList>
-          <template #left> 1值 </template>
-          <template #right> {{ item.boolOneValue }} </template>
-        </IndexList>
-        <IndexList>
-          <template #left> 实测值 </template>
-          <template #right> {{ item.actual }} </template>
-        </IndexList>
-        <IndexList>
-          <template #left> 结果 </template>
-          <template #right>
-            <van-radio-group v-model="item.passed" direction="horizontal" style="justify-content: flex-end">
-              <van-radio name="1">合格</van-radio>
-              <van-radio name="0">不合格</van-radio>
-            </van-radio-group></template
-          >
+        <IndexList label="图片" v-if="item.type === '6'" :leftSpan="4">
+          <van-field input-align="right">
+            <template #input>
+              <BasicUpload
+                v-if="!!item.actual"
+                :max-count="0"
+                :deletable="false"
+                :isResultArray="false"
+                :ossId="item.actual"
+              />
+              <div v-else>暂无</div>
+            </template>
+          </van-field>
         </IndexList>
       </div>
     </div>
@@ -72,7 +93,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getExecuteInfo } from '@/api/qms/qualityLot'
+import { getExecuteInfo, getWorkOrderByQualityLotId } from '@/api/qms/qualityLot'
+import BasicUpload from '@/components/BasicUpload'
 import IndexList from '@/views/components/indexList/index'
 
 const detailData = ref({
@@ -85,6 +107,7 @@ const detailData = ref({
 
 onMounted(() => {
   getDetail()
+  getWorkInfo()
 })
 
 async function getDetail() {
@@ -93,6 +116,18 @@ async function getDetail() {
       const { data } = await getExecuteInfo(history.state?.id)
       detailData.value = data
     } catch (error) {}
+  }
+}
+
+const workOrderInfo = ref(null)
+async function getWorkInfo() {
+  const id = history.state?.id
+  const { data } = await getWorkOrderByQualityLotId(id)
+  console.log(data)
+  if (data) {
+    data.batchNumber = data.extendList.find(item => item.key === 'batchNumber')?.value
+    workOrderInfo.value = data
+    console.log(workOrderInfo.value)
   }
 }
 </script>

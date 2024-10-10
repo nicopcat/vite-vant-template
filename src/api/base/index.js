@@ -20,3 +20,30 @@ export function getWorkStationList(query) {
     data: query,
   })
 }
+
+/**
+ * 查询班组列表
+ * @param query
+ * @returns {*}
+ */
+
+export function listClass(data) {
+  return http.request({
+    url: '/base/class/list',
+    method: 'get',
+    data: data,
+  })
+}
+/**
+ * 查询供应商列表
+ * @param query
+ * @returns {*}
+ */
+
+export function listSupplier(query) {
+  return http.request({
+    url: '/base/supplier/list',
+    method: 'get',
+    data: query,
+  })
+}

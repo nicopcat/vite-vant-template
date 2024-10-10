@@ -18,13 +18,18 @@
 
       <yu-card class="user-info">
         <template #body>
-          <div class="card-body clearfix">
-            <div class="avatar fl">
+          <div class="card-body flex flex-row items-center">
+            <div class="avatar">
               <img src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif" alt="" />
             </div>
-            <div class="info fl">
-              <div class="user-name ellipsis">Hi, {{ userInfo.nickName ?? '尊贵的用户' }}</div>
-              <div class="phone ellipsis">{{ userInfo.phonenumber ?? '' }}</div>
+            <div class="info">
+              <div class="name">
+                <div class="user-name ellipsis">Hi, {{ userInfo?.nickName ?? '尊敬的用户' }}</div>
+                <div class="mb-2" v-if="!!siteName">
+                  <van-tag type="primary" size="medium"> {{ siteName }}</van-tag>
+                </div>
+              </div>
+              <div class="phone ellipsis">{{ userInfo?.phonenumber ?? '' }}</div>
             </div>
           </div>
         </template>
@@ -64,17 +69,22 @@
       <yu-card class="user-info-card">
         <template #body>
           <list class="user-info-list">
-            <template #left>登录历史</template>
+            <template #left>登录时间</template>
             <template #right>
-              <div>10:04 13:08 <van-icon name="arrow" /></div>
+              <div>
+                {{ userInfo.loginDate }}
+              </div>
             </template>
           </list>
 
           <list class="user-info-list">
-            <template #left>意见反馈</template>
+            <template #left>
+              <span class="w-1/8">角色 </span>
+            </template>
+
             <template #right>
               <div>
-                <van-icon name="arrow" />
+                {{ userRoles }}
               </div>
             </template>
           </list>
@@ -112,9 +122,9 @@
 
       <yu-card class="user-info-card">
         <template #body>
-          <list class="user-info-list">
+          <list class="user-info-list" @click="loginOut">
             <template #center>
-              <div @click="loginOut">退出登录</div>
+              <div>退出登录</div>
             </template>
           </list>
         </template>
@@ -126,31 +136,53 @@
 </template>
 
 <script setup>
-//import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { showConfirmDialog } from 'vant'
 import YuCard from '@/components/YuCard'
 import list from '@/views/components/list/index.vue'
 import bg1 from '@/assets/imgs/bg-img1.png'
 import bg2 from '@/assets/imgs/bg-img2.png'
+import { getSiteList } from '@/api/system/user'
 
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store'
 
 const userStore = useUserStore()
 const router = useRouter()
+const siteList = reactive([])
+const siteName = ref('')
 
-const userInfo = userStore.info.user
+const userInfo = userStore.getUserInfo?.user
+console.log(userInfo)
+const userRoles = computed(() => {
+  return userInfo.roles.map(x => x.roleName).join(',')
+})
+onMounted(() => {
+  getSite()
+})
 
-async function loginOut(){
+const getSite = async () => {
+  try {
+    const { data } = await getSiteList()
+    const list = data.voList ?? []
+    siteList.splice(0, siteList.length, ...list)
+    console.log(siteList)
+    siteName.value = siteList.find(x => x.siteId === userInfo.siteId)?.companyName
+  } catch (error) {
+    console.log(`get site list error: ${error}`)
+  }
+}
+
+async function loginOut() {
   try {
     await showConfirmDialog({
-      title : '登出',
-      message : '是否确认退出'
+      title: '登出',
+      message: '是否确认退出',
     })
     userStore.logout()
     await router.push(`/login`)
     window && window.location.reload()
-  } catch (e){}
+  } catch (e) {}
 }
 </script>
 
@@ -226,16 +258,22 @@ async function loginOut(){
       }
       .info {
         color: rgba(36, 45, 61, 1);
-        font-size: 12px;
+        font-size: 13px;
         line-height: 18px;
         padding-top: 10px;
         text-align: left;
         width: calc(100% - 60px - 16px);
-        .user-name {
-          margin-bottom: 4px;
-          font-weight: 600;
-        }
-        .phone {
+        .name {
+          display: flex;
+          flex-flow: row;
+          justify-content: space-between;
+          align-items: center;
+          .user-name {
+            margin-bottom: 4px;
+            font-weight: 600;
+          }
+          .phone {
+          }
         }
       }
     }

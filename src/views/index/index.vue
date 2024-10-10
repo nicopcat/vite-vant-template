@@ -1,68 +1,64 @@
 <template>
-  <div class="section px-1 mb-12">
+  <div class="content px-3 mb-20">
     <div class="box">
       <van-image width="100%" fit="cover" :src="sf_bg" />
     </div>
-    <div class="box bg-white mb-2">
-      <van-cell class="box-header font-bold" title="质量管理" value="" />
-      <van-grid :border="false" :icon-size="38" clickable class="bg-white">
-        <van-grid-item icon="description" icon-color="#2db755" text="检验批管理" @click="redirectTo('qualityLot')" />
-        <van-grid-item icon="warning-o" icon-color="#2db755" text="异常管理" @click="redirectTo('exception')" />
-      </van-grid>
-    </div>
-
-    <div class="box bg-white mb-2">
-      <van-cell class="box-header font-bold" title="设备管理" value="" />
-      <van-grid :border="false" :icon-size="38" clickable>
-        <van-grid-item icon="failure" icon-color="#509df0" text="设备维修管理" @click="redirectTo('repair')" />
-        <van-grid-item icon="shield-o" icon-color="#509df0" text="保养工单管理" @click="redirectTo('maintenance')" />
-        <van-grid-item icon="aim" icon-color="#509df0" text="保养方案管理" @click="redirectTo('spotInspection')" />
-        <van-grid-item icon="manager-o" icon-color="#509df0" text="工装管理" @click="redirectTo(6)" />
-      </van-grid>
+    <div v-for="menu in menuList" :key="menu.moduleCode">
+      <div class="box bg-white my-2" v-if="menu.routers.length > 0">
+        <van-cell class="box-header font-bold" :title="menu.moduleName" value="" />
+        <van-grid :border="false" clickable class="items-baseline text-center">
+          <van-grid-item
+            v-for="router in menu?.routers"
+            :key="router.id"
+            icon="description"
+            icon-color="#2db755"
+            :text="router?.children[0].meta.title"
+            @click="redirectTo(router?.children[0].path)"
+          >
+            <div class="w-14">
+              <div class="h-12">
+                <van-image width="80%" :src="router?.children[0].meta.iconPath ?? def_menu" />
+              </div>
+              <div class="text-xs">{{ router?.children[0].meta.title }}</div>
+            </div>
+          </van-grid-item>
+        </van-grid>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import sf_bg from '@/assets/imgs/sf_bg.jpg'
+import def_menu from '@/assets/imgs/def_menu.png'
+import useUserStore from '@/store/modules/users'
 
 const router = useRouter()
+const menuList = ref([])
+const userStore = useUserStore()
 
-function redirectTo(params) {
-  switch (params) {
-    case 'qualityLot':
-      router.push('/qms/qualityLot/index')
-      break
-    case 'exception':
-      router.push('/qms/exception/index')
-      break
-
-    case 'repair':
-      router.push('/eam/repair/index')
-      break
-
-    case 'maintenance':
-      router.push('/eam/maintenance/index')
-      break
-
-    case 'spotInspection':
-      router.push('/eam/spotInspection/index')
-      break
-    default:
-      break
+onMounted(async () => {
+  await userStore.GetInfo()
+  if (useUserStore().getMenus?.length === 0) {
+    menuList.value = await useUserStore().GET_ASYNCMENU()
+  } else {
+    menuList.value = useUserStore().getMenus
   }
+})
+
+function redirectTo(path) {
+  router.push(path)
 }
 </script>
 
 <style lang="less" scoped>
-html {
-  background-color: #f2f6fa;
-}
-
 .content {
   width: 100%;
   .box {
+    border: 1px solid white;
+    border-radius: 4px;
     &-header {
       font-size: medium;
       font-weight: bold;

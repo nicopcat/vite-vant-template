@@ -1,6 +1,11 @@
 <template>
   <div class="content">
     <div class="pb-14">
+      <van-cell center title="仅显示本人待保养" class="w-auto mx-3">
+        <template #right-icon>
+          <van-switch v-model="isOnlyCurrentUser" @change="handleUserChange" />
+        </template>
+      </van-cell>
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
           <div v-for="(item, index) in list" class="content-box" :key="index">
@@ -9,44 +14,29 @@
                 <span class="font-bold break-words">{{ item.code }}</span>
               </template>
               <template #label>
-                <IndexList>
-                  <template #left> 设备编号 </template>
-                  <template #right> {{ item.device }} </template>
+                <IndexList label="设备"> {{ item.device }}/{{ item.deviceName }}</IndexList>
+                <IndexList label="设备标识">
+                  {{ getLabel(dictObj['eam_device_mark'], item.deviceMark) }}
                 </IndexList>
-                <IndexList>
-                  <template #left> 设备名称 </template>
-                  <template #right> {{ item.deviceName }} </template>
+                <IndexList label="计划开始时间"> {{ item.planStartTime }} </IndexList>
+                <IndexList label="计划结束时间"> {{ item.planEndTime }} </IndexList>
+                <IndexList label="保养类型">
+                  {{ getLabel(dictObj['eam_maintenance_type'], item.type) }}
                 </IndexList>
-                <IndexList>
-                  <template #left> 工单状态 </template>
-                  <template #right>{{ getLabel(dictObj['eam_maintenance_status'], item.status) }} </template>
+                <IndexList label="状态">
+                  {{ getLabel(dictObj['eam_maintenance_status'], item.status) }}
                 </IndexList>
-                <IndexList>
-                  <template #left> 工单类型 </template>
-                  <template #right>{{ getLabel(dictObj['eam_maintenance_type'], item.type) }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 维保人 </template>
-                  <template #right>{{ item.maintenanceUserName }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 计划开始时间 </template>
-                  <template #right>{{ item.planStartTime }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 计划结束时间 </template>
-                  <template #right>{{ item.planEndTime }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 是否停机 </template>
-                  <template #right>{{ getLabel(dictObj['eam_yes_no'], item.isShutdown + '') }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 保养说明 </template>
-                  <template #right>{{ item.remark }} </template>
-                </IndexList>
+                <!-- <IndexList label="工作中心">{{ item.workCenterName }}</IndexList>
+                <IndexList label="预计保养时间"> {{ item.expectMaintenanceTime }} </IndexList>
+                <IndexList label="维保人"> {{ item.maintenanceUserName }} </IndexList>
+                <IndexList label="辅助人"> {{ item.helpByName }} </IndexList>
+                <IndexList label="受理时间"> {{ item.handleTime }} </IndexList>
+                <IndexList label="实际开始时间"> {{ item.startTime }} </IndexList>
+                <IndexList label="实际结束时间"> {{ item.endTime }} </IndexList>
+                <IndexList label="是否合格"> {{ getLabel(dictObj['eam_yes_no'], item.result) }} </IndexList> -->
                 <div class="mt-4">
                   <van-button
+                    v-permission="['app:EamMaintenance:execute']"
                     size="small"
                     type="primary"
                     @click="execute(item)"
@@ -54,8 +44,11 @@
                     v-if="item.status === 'PROGRESSING' || item.status === 'PENDING'"
                     >执 行</van-button
                   >
-                  <van-button size="small" @click="detail(item)" class="mr-2">详 情</van-button>
+                  <van-button v-permission="['app:EamMaintenance:view']" size="small" @click="detail(item)" class="mr-2"
+                    >详 情</van-button
+                  >
                   <van-button
+                    v-permission="['app:EamMaintenance:accept']"
                     type="success"
                     size="small"
                     class="mr-2"
@@ -64,6 +57,16 @@
                     >受 理</van-button
                   >
                   <van-button
+                    v-permission="['app:EamMaintenance:confirm']"
+                    type="success"
+                    size="small"
+                    class="mr-2"
+                    @click="confirm(item)"
+                    v-if="item.status === 'DONE'"
+                    >确 认</van-button
+                  >
+                  <van-button
+                    v-permission="['app:EamMaintenance:skip']"
                     type="danger"
                     size="small"
                     class="mr-2"
@@ -79,19 +82,19 @@
       </van-pull-refresh>
     </div>
     <van-dialog
-      v-model:show="showClose"
-      :title="backType === 1 ? '维修工单关闭' : '维修工单撤销'"
-      :confirm-button-text="backType === 1 ? '确认关闭' : '确认撤销'"
+      v-model:show="showSkip"
+      title="跳过工单"
+      confirm-button-text="确认"
       show-cancel-button
       :before-close="beforeCloseDialogClose"
-      @confirm="confirmClose"
-      @cancel="showClose = false"
+      @confirm="confirmSkip"
+      @cancel="cancelSkip"
     >
       <div class="p-3">
-        <van-form required="auto" ref="closeFormRef">
+        <van-form required="auto" ref="skipFormRef">
           <van-field
             name="remark"
-            v-model="closeFormValue.remark"
+            v-model="skipFormValue.remark"
             label="备注"
             placeholder="备注"
             rows="2"
@@ -104,7 +107,13 @@
       </div>
     </van-dialog>
 
-    <van-floating-bubble axis="xy" v-model:offset="offset" icon="plus" @click="handleNew" />
+    <van-floating-bubble
+      v-if="hasPermi(['app:EamMaintenance:add'])"
+      axis="xy"
+      v-model:offset="offset"
+      icon="plus"
+      @click="handleNew"
+    />
 
     <NormalNavBar>
       <template #search>
@@ -113,7 +122,7 @@
     </NormalNavBar>
 
     <van-action-sheet v-model:show="showSearchSheet" @select="handleSearch">
-      <div class="min-h-[30vh] px-2 py-4 ">
+      <div class="min-h-[30vh] px-2 py-4">
         <van-form ref="queryFormRef" input-align="" :label-width="95">
           <van-field v-model="queryParams.code" name="code" label="保养工单号" placeholder="保养工单号" />
           <CustomPicker
@@ -136,15 +145,16 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getEamMaintenanceList, skipEamMaintenance, updatePending } from '@/api/eam/maintenance'
+import { getEamMaintenanceList, skipEamMaintenance, updatePending, confirmEamMaintenance } from '@/api/eam/maintenance'
 import { getEamDeviceList } from '@/api/eam/device'
 import { ResultEnum } from '@/config/constant'
 import { showFailToast, showSuccessToast } from 'vant'
 import IndexList from '@/views/components/indexList/index'
-import { getDict, getLabel } from '@/utils/dictUtils'
+import { getDict, getLabel, getDetailLabel } from '@/utils/dictUtils'
 import { showConfirmDialog } from 'vant'
 import { NormalNavBar } from '@/layout/components'
 import CustomPicker from '@/components/CustomPicker'
+import useUserStore from '@/store/modules/users'
 
 const router = useRouter()
 
@@ -156,14 +166,20 @@ onMounted(() => {
 // 加载字典
 const dictObj = reactive({})
 const getDicts = async () => {
-  const eam_maintenance_type = await getDict('eam_maintenance_type')
-  const eam_maintenance_status = await getDict('eam_maintenance_status')
-  const eam_yes_no = await getDict('eam_yes_no')
-  dictObj['eam_maintenance_type'] = eam_maintenance_type
-  dictObj['eam_maintenance_status'] = eam_maintenance_status
-  dictObj['eam_yes_no'] = eam_yes_no
+  dictObj['eam_maintenance_type'] = await getDict('eam_maintenance_type')
+  dictObj['eam_maintenance_status'] = await getDict('eam_maintenance_status')
+  dictObj['eam_yes_no'] = await getDict('eam_yes_no')
+  dictObj['eam_device_mark'] = await getDict('eam_device_mark')
 }
 
+function getUserId() {
+  const userInfo = useUserStore().getUserInfo
+  return userInfo.user.userId
+}
+function getUserName() {
+  const userInfo = useUserStore().getUserInfo
+  return userInfo?.user?.userName
+}
 // 控制 FloatingBubble 的位置
 const h = window.innerHeight
 const w = window.innerWidth
@@ -188,10 +204,15 @@ const initialParams = {
   code: '',
   type: '',
 }
+
+const isOnlyCurrentUser = ref(false)
+function handleUserChange(e) {
+  queryParams.maintenanceUserName = e ? getUserName() : ''
+  onRefresh()
+}
+
 function handleSearch() {
-  list.value = []
-  queryParams.pageNum = 0
-  getList()
+  onRefresh()
   showSearchSheet.value = false
 }
 function resetSearch() {
@@ -243,8 +264,11 @@ async function getList() {
     total.value = data.total
     // 加载状态结束
     loading.value = false
-    console.log(data)
-  } catch (error) {}
+  } catch (error) {
+    finished.value = true
+  } finally {
+    loading.value = false
+  }
 }
 
 /* 执行 */
@@ -254,16 +278,22 @@ function execute(params) {
 
 /* 详情 */
 function detail(item) {
-  router.push({ name: 'MaintenanceDetail', state: { id: item.id } }) // -> /user/123
+  router.push({ name: 'MaintenanceDetail', state: { id: item.id } })
 }
 
 /* 受理 */
 function accept(item) {
+  router.push({ name: 'MaintenanceAccept', state: { id: item.id, deviceId: item.deviceId } })
+}
+
+/* 确认 */
+function confirm(item) {
+  console.log(item)
   showConfirmDialog({
-    message: '是否确认受理工单？',
+    message: '是否确认工单？',
   })
     .then(async () => {
-      const { code, msg } = await updatePending(item.id)
+      const { code, msg } = await confirmEamMaintenance(item.id)
       if (code == ResultEnum.SUCCESS) {
         showSuccessToast(msg || '提交成功')
         onRefresh()
@@ -278,54 +308,39 @@ function accept(item) {
 
 /* 跳过 */
 async function skip(item) {
-  showConfirmDialog({
-    message: '是否确认跳过工单？',
-  })
-    .then(async () => {
-      const { code, msg } = await skipEamMaintenance(item.id)
-      if (code == ResultEnum.SUCCESS) {
-        showSuccessToast(msg || '提交成功')
-        onRefresh()
-      } else {
-        showFailToast('操作失败，请稍后再试...')
-      }
-    })
-    .catch(() => {
-      // on cancel
-    })
+  skipFormValue.value.id = item.id
+  showSkip.value = true
 }
 
-const showClose = ref(false)
-const closeFormValue = ref({
+const showSkip = ref(false)
+const skipFormValue = ref({
   id: '',
-  status: '',
   remark: '',
 })
-const closeFormRef = ref()
-const backType = ref(1)
+const skipFormRef = ref()
+function cancelSkip() {
+  skipFormValue.value.id = ''
+  skipFormValue.value.remark = ''
+  showSkip.value = false
+}
 
 const beforeCloseDialogClose = () => {
   return false
 }
 
-function confirmClose(e) {
-  closeFormRef.value
+function confirmSkip(e) {
+  skipFormRef.value
     .validate(['remark'])
     .then(async () => {
       try {
-        const request = backType.value === 1 ? closeEamRepair : undoEamRepair
-
-        const { code, msg } = await request({
-          id: closeFormValue.value.id,
-          remark: closeFormValue.value.remark,
-        })
+        const { code, msg } = await skipEamMaintenance(skipFormValue.value.id, skipFormValue.value.remark)
         if (code == ResultEnum.SUCCESS) {
           showSuccessToast(msg || '提交成功')
           onRefresh()
-          closeFormValue.value.id = ''
-          closeFormValue.value.remark = ''
+          skipFormValue.value.id = ''
+          skipFormValue.value.remark = ''
           setTimeout(() => {
-            showClose.value = false
+            showSkip.value = false
           }, 300)
         } else {
           showFailToast('操作失败，请稍后再试...')
@@ -351,7 +366,6 @@ function handleNew() {
     border-radius: 4px;
     background-color: #fff;
     margin: 0.6rem;
-
   }
 }
 </style>

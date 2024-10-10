@@ -52,17 +52,17 @@ export default defineConfig(({ command, mode }) => {
 
     build: {
       path: './',
-      sourcemap: true,
+      sourcemap: false,
       brotliSize: false,
       chunkSizeWarningLimit: 2500,
       target: 'es2015',
-      // minify: 'terser',
-      // terserOptions: {
-      //   compress: {
-      //     drop_console: true,
-      //     drop_debugger: true
-      //   }
-      // },
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
 
       rollupOptions: {
         // output: {

@@ -1,53 +1,54 @@
 <template>
   <div class="van-cell-custom">
     <van-field
+      :input-align="inputAlign"
       readonly
-      right-icon="search"
+      :right-icon="props.disabled ? '' : 'search'"
       v-model="inputValue"
       :label="props.label"
       :placeholder="'请选择' + props.label"
-      @click="showPicker = true"
+      @click="showPicker = !props.disabled && true"
       :required="props.required"
       :name="props.name"
       :rules="props.rules"
+      :disabled="props.disabled"
     />
     <van-action-sheet v-model:show="showPicker" :title="props.label" teleport="body">
       <div class="pb-6 min-h-[50vh]">
         <div v-if="props.filterOn">
-          <van-search v-model="filterVal" placeholder="请输入搜索关键词" input-align="center" />
+          <van-search v-model="filterVal" placeholder="请输入关键词" input-align="center" />
         </div>
-        <van-list v-if="filterList && filterList.length > 0">
-          <van-row class="mx-6 mb-2 ">
-            <van-col
-              :span="Math.floor(22 / props.labelProps.length)"
-              class="font-bold text-sm"
-              v-for="(item, i) in props.labelProps"
-              :key="i"
-              >{{ item.header }}</van-col
-            >
-          </van-row>
-          <van-cell
-            class="px-6"
-            v-for="item in filterList"
-            :key="item.id"
-            :title="item[propKey]"
-            is-link
-            @click="handleSelect(item)"
-          >
-            <template #title>
-              <van-row>
-                <van-col
-                  :span="Math.floor(24 / props.labelProps.length)"
-                  v-for="(prop, i) in props.labelProps"
-                  :key="i"
-                >
-                  <span class="break-all pr-1">{{ item[prop.keyName] }}</span></van-col
-                >
-              </van-row>
+        <van-cell>
+          <template #title>
+            <van-row class="">
+              <van-col :span="11" class="font-bold text-sm" v-for="(item, i) in props.labelProps" :key="i">{{
+                item.header
+              }}</van-col>
+            </van-row>
+          </template>
+        </van-cell>
+        <div class="h-[50vh]">
+          <DynamicScroller class="h-full" :items="filterList" :min-item-size="54" :key-field="props.idKey">
+            <template v-slot="{ item, index, active }">
+              <DynamicScrollerItem
+                :item="item"
+                :active="active"
+                :size-dependencies="[item.message]"
+                :data-index="index"
+              >
+                <van-cell is-link @click="handleSelect(item)" class="flex flex-row justify-around items-center py-2">
+                  <template #title>
+                    <van-row>
+                      <van-col :span="12" v-for="(prop, i) in props.labelProps" :key="i">
+                        <div class="text-xs break-words">{{ item[prop.keyName] }}</div></van-col
+                      >
+                    </van-row>
+                  </template>
+                </van-cell>
+              </DynamicScrollerItem>
             </template>
-          </van-cell>
-        </van-list>
-        <van-empty v-else description="暂无数据" />
+          </DynamicScroller>
+        </div>
       </div>
     </van-action-sheet>
   </div>
@@ -55,13 +56,17 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import {isArray} from '@/utils/validate'
+import { isArray } from '@/utils/validate'
 
 const props = defineProps({
   label: {
     type: String,
-    required: true,
-    default: '选择',
+    default: '',
+  },
+  inputAlign: {
+    // 内容左右align
+    type: String,
+    default: 'right',
   },
   // 默认值
   defValue: {
@@ -115,6 +120,10 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emits = defineEmits(['dataEvent'])
@@ -133,7 +142,16 @@ const filterList = computed(() => {
   if (!props.dataSource || !propKey.value || !isArray(props.dataSource)) {
     return []
   }
-  return props.dataSource.filter(x => x[propKey.value].toLowerCase().includes(filterVal.value.toLowerCase()))
+
+  if (props.labelProps.length === 1) {
+    return props.dataSource.filter(x => x[propKey.value].toLowerCase().includes(filterVal.value.toLowerCase()))
+  } else {
+    return props.dataSource.filter(
+      x =>
+        x[propKey.value].toLowerCase().includes(filterVal.value.toLowerCase()) ||
+        x[props.labelProps[1].keyName].toLowerCase().includes(filterVal.value.toLowerCase())
+    )
+  }
 })
 
 watch(
@@ -161,7 +179,8 @@ function handleSelect(value) {
 </script>
 
 <style lang="scss" scoped>
-.van-cell-custom {
-  border-bottom: 1px solid var(--van-cell-border-color);
+.van-cell-custom .van-cell {
+  // border-bottom: 1px solid var(--van-cell-border-color);
+  // padding: 0;
 }
 </style>

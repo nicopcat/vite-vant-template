@@ -1,61 +1,54 @@
 <template>
-  <div class="content">
-    <van-form ref="formRef" @submit="onSubmit" input-align="right" validate-first scroll-to-error>
-      <van-cell-group inset>
+  <div class="">
+    <div class="content">
+      <van-form ref="formRef" @submit="onSubmit" input-align="right">
+        <!-- <BasicUpload  /> -->
+
         <CustomSelect
           required
           name="deviceId"
-          :rules="[{ required: true, message: '请选择设备编号' }]"
-          label="设备编号"
+          :rules="[{ required: true, message: '请选择设备' }]"
+          label="设备"
           filterOn
           :dataSource="deviceList"
           :defValue="editData.deviceId"
           :labelProps="[
-            { header: '设备编号', keyName: 'code' },
+            { header: '设备编码', keyName: 'code' },
             { header: '设备名称', keyName: 'name' },
           ]"
           idKey="id"
           @dataEvent="e => (editData.deviceId = e.id)"
         />
 
-        <CustomSelect
-          required
-          name="qualityPlanId"
-          :rules="[{ required: true, message: '请选择保养方案' }]"
-          label="保养方案"
-          filterOn
-          :dataSource="planList"
-          :defValue="editData.qualityPlanId"
-          :labelProps="[
-            { header: '方案号', keyName: 'code' },
-            { header: '方案名称', keyName: 'name' },
-          ]"
-          @dataEvent="e => (editData.qualityPlanId = e.id)"
-        />
-
         <CustomPicker
           required
-          name="subtype"
-          :rules="[{ required: true, message: '请选择保养类型' }]"
-          label="保养类型"
-          :dataSource="dictObj['eam_maintenance_type']"
-          :defValue="editData.subtype"
+          name="type"
+          :rules="[{ required: true, message: '请选择检验类型' }]"
+          label="检验类型"
+          :dataSource="dictObj['eam_quality_plan_cycle']"
+          :defValue="editData.type"
           :columnsField="{ text: 'dictLabel', value: 'dictValue' }"
-          @dataEvent="e => (editData.subtype = e.dictValue)"
+          @dataEvent="e => (editData.type = e.dictValue)"
         />
-      </van-cell-group>
-      <div class="mt-4 p-2">
-        <van-button round block type="primary" native-type="submit"> 新增 </van-button>
-      </div>
-    </van-form>
+        <CustomPicker
+          label="班次"
+          :dataSource="dictObj['eam_spot_inspection_shift']"
+          :defValue="editData.shift"
+          :columnsField="{ text: 'dictLabel', value: 'dictValue' }"
+          @dataEvent="e => (editData.shift = e.dictValue)"
+        />
+      </van-form>
+    </div>
+    <div class="mb-10 p-2">
+      <van-button round block type="primary" @click="onSubmit"> 新 增 </van-button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
 import { getEamDeviceList } from '@/api/eam/device'
-import { getQualityPlanList } from '@/api/eam/qualityPlan'
-import { addEamDeviceSpotInspection } from '@/api/eam/deviceSpotInspection'
+import { addEamSpotInspection } from '@/api/eam/spotInspection'
 import CustomSelect from '@/components/CustomSelect'
 import CustomPicker from '@/components/CustomPicker'
 import { ResultEnum } from '@/config/constant'
@@ -67,21 +60,19 @@ const router = useRouter()
 
 const editData = ref({})
 const deviceList = ref([])
-const planList = ref([])
 
 const formRef = ref()
 
 onMounted(async () => {
   await getDicts()
   await getDevices()
-  await getQualityPlans()
 })
 
 // 加载字典
 const dictObj = reactive({})
 const getDicts = async () => {
-  const eam_maintenance_type = await getDict('eam_maintenance_type')
-  dictObj['eam_maintenance_type'] = eam_maintenance_type
+  dictObj['eam_quality_plan_cycle'] = await getDict('eam_quality_plan_cycle')
+  dictObj['eam_spot_inspection_shift'] = await getDict('eam_spot_inspection_shift')
 }
 
 async function getDevices() {
@@ -91,21 +82,12 @@ async function getDevices() {
   } catch (error) {}
 }
 
-async function getQualityPlans() {
-  try {
-    const { data } = await getQualityPlanList()
-    planList.value = data.rows ?? []
-  } catch (error) {}
-}
-
 async function onSubmit() {
-  editData.value.type = '2'
-
   formRef.value
     .validate()
     .then(async () => {
       try {
-        const { code, msg } = await addEamDeviceSpotInspection(editData.value)
+        const { code, msg } = await addEamSpotInspection(editData.value)
         if (code == ResultEnum.SUCCESS) {
           showSuccessToast(msg || '提交成功')
           router.back()
@@ -120,9 +102,14 @@ async function onSubmit() {
 
 <style lang="less" scoped>
 .content {
-  width: 100%;
-  margin: 1.2rem 0;
-  padding-bottom: 4rem;
-  // background-color: #f2f4f8;
+  margin: 1.5rem 0.6rem;
+  padding: 0.2rem 0;
+  border-radius: 4px;
+  background-color: #fff;
+
+  .van-row {
+    font-size: 15px;
+    padding: 0.4rem 0;
+  }
 }
 </style>

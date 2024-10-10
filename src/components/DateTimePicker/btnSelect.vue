@@ -89,7 +89,7 @@ function confirmTime() {
 </script>
 
 <style lang="scss" scoped>
-.van-cell-custom {
-  border-bottom: 1px solid rgba(238, 238, 238, 0.725);
-}
+// .van-cell-custom {
+//   border-bottom: 1px solid rgba(238, 238, 238, 0.725);
+// }
 </style>

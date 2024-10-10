@@ -1,87 +1,122 @@
 <template>
   <div class="content">
-    <div class="container">
-      <div class="box">
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 设备编号</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.deviceCode }}</span>
-          </template>
+    <div class="content-box">
+      <van-form ref="formRef" input-align="">
+        <IndexList label="设备编号">
+          <span> {{ repair?.deviceCode }}</span>
         </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 设备名称</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.deviceName }}</span>
-          </template>
+        <IndexList label="设备名称">
+          <span> {{ repair?.deviceName }}</span>
         </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 工单状态</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.status }}</span>
-          </template>
+        <!-- <IndexList label="工单状态">
+            <span> {{ getDetailLabel('eam_repair_status', repair?.status) }}</span>
+          </IndexList> -->
+        <IndexList label="故障描述">
+          <span> {{ repair?.faultReportDescription }}</span>
         </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 故障描述</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.faultReportDescription }}</span>
-          </template>
+        <!-- <IndexList label="严重程度">
+            <span> {{ getDetailLabel('eam_repair_level', repair?.faultLevel) }}</span>
+          </IndexList>
+          <IndexList label="是否停机">
+            <span> {{ getDetailLabel('eam_yes_no', repair?.shutdown) }}</span>
+          </IndexList>
+          <IndexList label="故障累计时间(分钟)">
+            <span> {{ repair?.faultHour }}</span>
+          </IndexList>
+          <IndexList label="报修时间">
+            <span> {{ repair?.faultReportTime }}</span>
+          </IndexList>
+          <IndexList label="报修人">
+            <span> {{ repair?.reportUser }}</span>
+          </IndexList>
+          <IndexList label="报修人电话">
+            <span> {{ repair?.reportUserPhone }}</span>
+          </IndexList> -->
+        <IndexList label="维修人员" required>
+          <CustomSelect
+            required
+            name="repairUser"
+            :rules="[{ required: true, message: '请选择维修人员' }]"
+            filterOn
+            :dataSource="userList"
+            idKey="userId"
+            :defValue="formValue.repairUser"
+            :labelProps="[
+              { header: '用户昵称', keyName: 'nickName' },
+              { header: '用户名称', keyName: 'userName' },
+            ]"
+            @dataEvent="e => (formValue.repairUser = e.userId)"
+          />
         </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 严重程度</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.faultLevel }}</span>
-          </template>
+        <IndexList label="是否委外">
+          <van-radio-group v-model="formValue.isOutsource" direction="horizontal" style="justify-content: flex-end">
+            <van-radio name="1">是</van-radio>
+            <van-radio name="0">否</van-radio>
+          </van-radio-group>
         </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 是否停机</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.shutdown }}</span>
-          </template>
+        <IndexList required label="委外原因" v-if="formValue.isOutsource === '1'">
+          <van-field
+            input-align="right"
+            :rules="[{ required: true, message: '请输入委外原因' }]"
+            v-model="formValue.outsourceReason"
+            name="outsourceReason"
+            autosize
+            placeholder="请输入委外原因"
+            rows="3"
+            type="textarea"
+            maxlength="500"
+            show-word-limit
+          />
         </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 故障累计时间(分钟)</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.faultHour }}</span>
-          </template>
+        <IndexList required label="委外供方" v-if="formValue.isOutsource === '1'">
+          <van-field
+            input-align="right"
+            :rules="[{ required: true, message: '请输入委外供方' }]"
+            v-model="formValue.outsourceSupply"
+            name="outsourceSupply"
+            autosize
+            placeholder="请输入委外供方"
+          />
         </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 报修时间</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.faultReportTime }}</span>
-          </template>
-        </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 报修人</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.reportUser }}</span>
-          </template>
-        </IndexList>
-        <IndexList>
-          <template #left> <span class="text-sm text-slate-400"> 报修人电话</span> </template>
-          <template #right>
-            <span class="text-sm text-black"> {{ repair?.reportUserPhone }}</span>
-          </template>
-        </IndexList>
-      </div>
-
-      <div class="mt-4 p-2">
-        <van-button round block type="primary" @click="accept"> 受 理 </van-button>
-      </div>
+      </van-form>
+    </div>
+    <div class="mt-4 p-2">
+      <van-button round block type="primary" @click="accept"> 受 理 </van-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getAcceptDetailInfo, acceptEamRepair } from '@/api/eam/repair'
-import List from '@/views/components/list'
 import { ResultEnum } from '@/config/constant'
 import { showFailToast, showSuccessToast } from 'vant'
 import IndexList from '@/views/components/indexList/index'
+import CustomSelect from '@/components/CustomSelect'
+import { getUserList } from '@/api/system/user'
+import { getDetailLabel } from '@/utils/dictUtils'
 
 const router = useRouter()
 const repair = ref({})
+const formRef = ref(null)
+const formValue = ref({
+  id: history.state?.id,
+  isOutsource: '0',
+})
+
+onMounted(async () => {
+  await getUsers()
+  getDetail()
+})
+const userList = ref([])
+
+async function getUsers() {
+  try {
+    const { data } = await getUserList()
+    userList.value = data.rows ?? []
+  } catch (error) {}
+}
 
 async function getDetail() {
   console.log(history.state?.id)
@@ -92,20 +127,29 @@ async function getDetail() {
     } catch (error) {}
   }
 }
-getDetail()
 
-async function accept(params) {
-  try {
-    const { code, msg } = await acceptEamRepair({ id: history.state?.id })
-    if (code == ResultEnum.SUCCESS) {
-      showSuccessToast(msg || '提交成功')
-      setTimeout(() => {
-        router.back()
-      }, 500)
-    } else {
-      showFailToast('操作失败，请稍后再试...')
-    }
-  } catch (error) {}
+async function accept() {
+  formRef.value
+    ?.validate()
+    .then(async () => {
+      console.log(formValue.value)
+
+      try {
+        const { code, msg } = await acceptEamRepair(formValue.value)
+        if (code == ResultEnum.SUCCESS) {
+          showSuccessToast(msg || '提交成功')
+          setTimeout(() => {
+            router.back()
+          }, 500)
+        } else {
+          showFailToast('操作失败，请稍后再试...')
+        }
+      } catch (error) {}
+    })
+    .catch(error => {
+      console.log(error)
+      // showFailToast('请填写必填项')
+    })
 }
 </script>
 
@@ -115,25 +159,17 @@ async function accept(params) {
   margin: 1rem 0;
   background-color: #f2f4f8;
 
-  .container {
-    width: 100%;
-    background-color: #f2f4f8;
-    padding-bottom: 3rem;
+  &-box {
+    padding: 0.2rem 0;
+    border-radius: 4px;
+    background-color: #fff;
+    margin: 1.5rem 0.6rem;
+    padding: 0.5rem 0.8rem;
 
-    .box {
-      background-color: #fff;
-      padding: 0.5rem 1rem;
-      margin: 10px 10px;
-      margin-bottom: 1rem;
-
-      &-item {
-        margin: 0.4rem;
-      }
+    .van-row {
+      font-size: 15px;
+      padding: 0.4rem 0;
     }
   }
-}
-
-.van-cell {
-  padding: 0.4rem;
 }
 </style>

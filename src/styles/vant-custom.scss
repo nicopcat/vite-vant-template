@@ -14,14 +14,17 @@
   .van-toast__icon {
     font-size: 30px;
   }
+
   .yu-icon-shanchu {
     color: var(--yu-red-color);
   }
+
   .yu-icon-chenggong {
     color: var(--yu-green-color);
   }
 }
-.van-cell:after{
+
+.van-cell:after {
   position: absolute;
   box-sizing: border-box;
   content: " ";
@@ -29,10 +32,17 @@
   right: var(--van-padding-md);
   bottom: 0;
   left: var(--van-padding-md);
-  // border-bottom: 1px solid var(--van-cell-border-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0);
   transform: scaleY(0.2);
 }
 
-.van-tabs__line{
+.van-tabs__line {
   z-index: 0;
+}
+
+.van-uploader__wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-end;
 }

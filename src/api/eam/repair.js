@@ -138,18 +138,15 @@ export function deletedEamRepair(ids) {
 }
 
 /**
- * 倒出维修工单
- * @param params
+ * 查询我的维修工单列表
+ * @param query
+ * @returns {*}
  */
-export function exportItem(params) {
-  return http.request(
-    {
-      url: '/eam/EamRepair/export?' + qs.stringify(params),
-      method: 'post',
-      responseType: 'blob',
-    },
-    {
-      isTransformResponse: false,
-    },
-  )
+
+export function getMyEamRepairList(query) {
+  return http.request({
+    url: 'eam/EamRepair/listMyRepair',
+    method: 'get',
+    data: query,
+  })
 }

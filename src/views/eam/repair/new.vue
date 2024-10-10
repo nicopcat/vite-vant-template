@@ -1,9 +1,21 @@
 <template>
-  <div class="">
-    <div class="content-box">
-      <van-form class="" ref="formRef" @submit="onSubmit" input-align="right" validate-first scroll-to-error>
-        <!-- <BasicUpload  /> -->
-        
+  <div>
+    <CodeScanner ref="scannerRef" v-if="showScan" @scaned="getScanValue"></CodeScanner>
+
+    <div class="content" v-else>
+      <div class="flex flex-row w-full px-0">
+        <van-search
+          input-align="left"
+          v-model="scanValue"
+          placeholder="点击右侧扫码或输入设备编号搜索"
+          left-icon="scan"
+          @click-left-icon="handleScan"
+          class="w-full"
+          @search="handleDeviceCodeSearch"
+        >
+        </van-search>
+      </div>
+      <van-form class="" ref="formRef" @submit="onSubmit" input-align="right">
         <CustomSelect
           required
           name="deviceId"
@@ -22,7 +34,7 @@
         <DateTimePicker
           v-model="editData.faultReportTime"
           label="故障提报时间"
-          labelWid="7em"
+          labelWidth="7em"
           required
           name="faultReportTime"
           :rules="[{ required: true, message: '请选择故障提报时间' }]"
@@ -64,9 +76,8 @@
           @dataEvent="e => (editData.faultReportType = e.dictValue)"
         />
         <CustomPicker
-          required
           name="faultLevel"
-          :rules="[{ required: true, message: '请选择严重程度' }]"
+          :rules="[{ required: false, message: '请选择严重程度' }]"
           label="严重程度"
           :dataSource="dictObj['eam_repair_level']"
           :defValue="editData.faultLevel"
@@ -97,11 +108,17 @@
           maxlength="500"
           show-word-limit
         />
+        <!-- <BasicUpload :ossId="editData?.imgOssIds" @uploadChange="e => (editData.imgOssIds = e)" /> -->
 
-        <div class="mt-4 p-2">
-          <van-button round block type="primary" native-type="submit"> 新增 </van-button>
-        </div>
+        <van-field label="附件" input-align="right" name="imgOssIds" placeholder="">
+          <template #input>
+            <BasicUpload :ossId="editData?.imgOssIds" @uploadChange="e => (editData.imgOssIds = e)" />
+          </template>
+        </van-field>
       </van-form>
+    </div>
+    <div class="mb-10 p-2">
+      <van-button round block type="primary" @click="onSubmit"> 新增 </van-button>
     </div>
   </div>
 </template>
@@ -109,21 +126,25 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
 import { addEamRepair } from '@/api/eam/repair'
-import { getEamDeviceList } from '@/api/eam/device'
+import { getEamDeviceList, getEamDeviceDetail } from '@/api/eam/device'
 import { getUserList } from '@/api/system/user'
 import DateTimePicker from '@/components/DateTimePicker'
 import CustomSelect from '@/components/CustomSelect'
 import CustomPicker from '@/components/CustomPicker'
-import BasicUpload from '@/components/BasicUpload'
 import { ResultEnum } from '@/config/constant'
 import { showFailToast, showSuccessToast } from 'vant'
 import { useRouter } from 'vue-router'
 import { getDict } from '@/utils/dictUtils'
 import useUserStore from '@/store/modules/users'
+import CodeScanner from '@/views/components/CodeScanner/index.vue'
+import { parseTime } from '@/utils/index'
+import BasicUpload from '@/components/BasicUpload'
 
 const router = useRouter()
 
-const editData = ref({})
+const editData = ref({
+  faultReportTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+})
 const deviceList = ref([])
 const userList = ref([])
 
@@ -139,19 +160,15 @@ onMounted(async () => {
 // 加载字典
 const dictObj = reactive({})
 const getDicts = async () => {
-  const eam_repair_type_dict = await getDict('eam_repair_type')
-  const eam_repair_level_dict = await getDict('eam_repair_level')
-  const eam_yes_no_dict = await getDict('eam_yes_no')
-
-  dictObj['eam_repair_type'] = eam_repair_type_dict
-  dictObj['eam_repair_level'] = eam_repair_level_dict
-  dictObj['eam_yes_no'] = eam_yes_no_dict
+  dictObj['eam_repair_type'] = await getDict('eam_repair_type')
+  dictObj['eam_repair_level'] = await getDict('eam_repair_level')
+  dictObj['eam_yes_no'] = await getDict('eam_yes_no')
 }
 
 function getUserInfo() {
   const userInfo = useUserStore().getUserInfo
-  editData.value.reportUserPhone = userInfo.user.phonenumber
-  editData.value.reportUser = userInfo.user.userId + ''
+  editData.value.reportUserPhone = userInfo?.user?.phonenumber
+  editData.value.reportUser = userInfo?.user?.userId
 }
 
 async function getDevices() {
@@ -166,6 +183,34 @@ async function getUsers() {
     const { data } = await getUserList()
     userList.value = data.rows ?? []
   } catch (error) {}
+}
+
+const scanValue = ref('')
+const showScan = ref(false)
+const scannerRef = ref(null)
+
+function handleScan() {
+  showScan.value = true
+}
+
+async function handleDeviceCodeSearch() {
+  // 接口查询id
+  const { data } = await getEamDeviceList({ code: scanValue.value })
+  console.log(data)
+  if (data?.rows && data.rows?.length > 0) {
+    editData.value.deviceId = data.rows[0].id
+  } else {
+    showFailToast('该编号未匹配到设备，请重新输入')
+  }
+}
+
+function getScanValue(e) {
+  console.log(e)
+  if (!!e) {
+    scanValue.value = e
+    // editData.deviceId = e
+  }
+  showScan.value = false
 }
 
 async function onSubmit() {
@@ -188,20 +233,14 @@ async function onSubmit() {
 
 <style lang="less" scoped>
 .content {
-  width: 100%;
-  margin: 1rem 0;
-  background-color: #f2f4f8;
+  margin: 1.5rem 0.6rem;
+  padding: 0.2rem 0;
+  border-radius: 4px;
+  background-color: #fff;
 
-  &-box {
-    padding: 0.2rem 0;
-    border-radius: 4px;
-    background-color: #fff;
-    margin: 1.5rem 0.6rem;
-
-    .van-row {
-      font-size: 15px;
-      padding: 0.4rem 0;
-    }
+  .van-row {
+    font-size: 15px;
+    padding: 0.4rem 0;
   }
 }
 </style>

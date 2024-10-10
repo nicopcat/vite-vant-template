@@ -8,6 +8,7 @@ import './utils/rem'
 import { setupVant } from '@/plugins/setupVant'
 import 'vant/lib/index.css'
 
+import { hasBtnPermission } from '@/utils/hasPermi'
 //导入公共样式
 import './styles/index.scss'
 //第三方自定义字体文件
@@ -21,11 +22,25 @@ import globalEmitter from '@/utils/mitt'
 import registerDirective from '@/directive'
 //国际化
 import { setupI18n } from '@/locale'
+import VueVirtualScroller from 'vue-virtual-scroller'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 const app = createApp(App)
+app.config.globalProperties.hasPermi = hasBtnPermission // 权限
 
-const initApp = async() => {
+document.addEventListener('plusready', function () {
+  plus.key.addEventListener(
+    'backbutton',
+    function () {
+      window.history.go(-1)
+    },
+    false
+  )
+})
+
+const initApp = async () => {
   app.use(router)
+  app.use(VueVirtualScroller)
   useSvgIcon(app)
   registerStore(app)
   registerDirective(app)

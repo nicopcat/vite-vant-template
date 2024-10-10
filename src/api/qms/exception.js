@@ -147,3 +147,17 @@ export function splitException(data) {
     data: data,
   })
 }
+
+/**
+ * 查询异常决策管理列表
+ * @param query
+ * @returns {*}
+ */
+
+export function listExceptionDecision(data) {
+  return http.request({
+    url: '/qms/exceptionDecision/list',
+    method: 'get',
+    data: data,
+  })
+}

@@ -26,13 +26,13 @@ const key = computed(() => route.path)
 const cachedViews = computed(() => tagsViewStore.cachedViews)
 
 defineOptions({
-  name : 'AppMain'
+  name: 'AppMain',
 })
 </script>
 
 <style lang="scss" scoped>
 .app-main {
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 35px);
   width: 100%;
   position: relative;
   overflow: hidden;

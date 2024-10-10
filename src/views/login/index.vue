@@ -3,7 +3,7 @@
     <template #body>
       <van-form label-width="0" @submit="onSubmit">
         <van-cell-group inset>
-          <van-field v-model="selectCompany" is-link label="" placeholder="站点" @click="showPicker = true" />
+          <van-field v-model="selectCompany" is-link readonly label="" placeholder="站点" @click="showPicker = true" />
           <van-popup v-model:show="showPicker" round position="bottom">
             <van-picker
               :columns="siteList"
@@ -44,7 +44,7 @@
               label=""
               placeholder="验证码"
               clearable
-              :rules="rules.password"
+              :rules="rules.code"
             />
             <view class="verify-code-img">
               <van-image v-if="codeResult.img" @click="requestCode" :src="`data:image/gif;base64,${codeResult.img}`" />
@@ -60,7 +60,7 @@
     <template #foot>
       <div>
         <div class="handle">
-          <van-button plain class="txt-btn no-border yellow-btn" @click="router.push('/forgot')">忘记密码</van-button>
+          <!-- <van-button plain class="txt-btn no-border yellow-btn" @click="router.push('/forgot')">忘记密码</van-button> -->
 
           <!-- <span class="split-line"></span>
           <van-button plain class="txt-btn no-border yellow-btn" @click="router.push('/register')">注册账号</van-button> -->
@@ -71,6 +71,12 @@
           <svg-icon icon-class="wechat" class-name="third-icon wechat" />
           <svg-icon icon-class="weibo" class-name="third-icon weibo" />
         </div> -->
+        <div class="footer flex flex-row items-center justify-center fix bottom-0 mt-4">
+          <div class="h-5 bg-blue-300 px-2 mx-2">
+            <img :src="manaslogo" alt="Logo" class="h-full" />
+          </div>
+          <div class="mr-2 text-xs text-slate-400">广西七识数字科技有限公司 © 版权所有</div>
+        </div>
       </div>
     </template>
   </login-layout>
@@ -86,20 +92,35 @@ import { getSiteList, getCode } from '@/api/system/user'
 import { ResultEnum } from '@/config/constant'
 
 import { useUserStore } from '@/store'
+import manaslogo from '@/assets/imgs/manaslogo.png'
+
 const userStore = useUserStore()
 
 const router = useRouter()
 
 const trigger = 'onBlur' //onChange
+// const formState = reactive({
+//   username: '',
+//   password: '',
+//   siteId: '',
+//   code: '',
+//   uuid: '',
+// })
+// const formState = reactive({
+//   username: 'nic',
+//   password: 'admin123',
+//   siteId: '',
+//   code: '',
+//   uuid: '',
+// })
 
 const formState = reactive({
-  username: 'admin',
-  password: 'admin123',
-  siteId: '000000',
+  username: 'test001',
+  password: '123123',
+  siteId: '',
   code: '',
   uuid: '',
 })
-
 const selectCompany = ref('')
 const siteList = reactive([])
 onMounted(() => {
@@ -112,8 +133,10 @@ const getSite = async () => {
     const { data } = await getSiteList()
     const list = data.voList ?? []
     siteList.splice(0, siteList.length, ...list)
-    formState.siteId = siteList[0].siteId
-    selectCompany.value = siteList[0].companyName
+    if (siteList.length > 0) {
+      formState.siteId = siteList[1].siteId
+      selectCompany.value = siteList[1].companyName
+    }
   } catch (error) {
     console.log(`get site list error: ${error}`)
   }
@@ -154,21 +177,24 @@ const rules = {
   code: [{ required: true, message: '请输入验证码', trigger }],
 }
 
-const onSubmit = async values => {
+const onSubmit = async () => {
   const params = {
     ...formState,
     clientId: import.meta.env.VITE_APP_CLIENT_ID,
     grantType: 'password',
   }
 
-  const { code: c, msg } = await userStore.login(params)
+  try {
+    const { code: c, msg } = await userStore.login(params)
 
-  if (c == ResultEnum.SUCCESS) {
-    showSuccessToast(msg || '登录成功！')
-    // router.push('/index')
-    router.push({ name: 'Home' })
-  } else {
-    showFailToast('登录失败，请稍后再试...')
+    if (c == ResultEnum.SUCCESS) {
+      await userStore.GET_ASYNCMENU() // 加载menu
+
+      showSuccessToast(msg || '登录成功！')
+      router.push('/')
+    }
+  } catch (error) {
+    console.log(error)
     requestCode()
   }
 }
@@ -228,6 +254,12 @@ const onSubmit = async values => {
         object-fit: contain;
       }
     }
+  }
+}
+
+@media (min-aspect-ratio: 13/20) {
+  .footer {
+    display: none;
   }
 }
 </style>

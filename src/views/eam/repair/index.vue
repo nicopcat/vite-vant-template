@@ -1,6 +1,12 @@
 <template>
   <div class="content">
     <div class="pb-14">
+      <div class="flex flex-row w-full px-3">
+        <div @click="handleFilter('1')" :class="[isActive == '1' ? 'isActive' : 'isNotActive', 'tab']">我的报修</div>
+        <div @click="handleFilter('2')" :class="[isActive == '2' ? 'isActive' : 'isNotActive', 'tab']">待维修</div>
+        <div @click="handleFilter('3')" :class="[isActive == '3' ? 'isActive' : 'isNotActive', 'tab']">需我维修</div>
+        <div @click="handleFilter('4')" :class="[isActive == '4' ? 'isActive' : 'isNotActive', 'tab']">全部</div>
+      </div>
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
           <div v-for="(item, index) in list" class="content-box" :key="index">
@@ -9,27 +15,20 @@
                 <span class="font-bold break-words">{{ item.code }}</span>
               </template>
               <template #label>
-                <IndexList>
-                  <template #left> 故障提报时间 </template>
-                  <template #right> {{ item.faultReportTime }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 提报人 </template>
-                  <template #right> {{ item.reportUser }} </template>
-                </IndexList>
-                <IndexList>
-                  <template #left> 状态 </template>
-                  <template #right>{{ getLabel(dictObj['eam_repair_status'], item.status) }} </template>
-                </IndexList>
+                <IndexList label="故障提报时间"> {{ item.faultReportTime }} </IndexList>
+                <IndexList label="提报人"> {{ item.reportUser }} </IndexList>
+                <IndexList label="状态"> {{ getLabel(dictObj['eam_repair_status'], item.status) }} </IndexList>
                 <div class="mt-4">
-                  <van-button size="small" @click="view(item)" class="mr-2">查 看</van-button>
+                  <van-button size="small" @click="view(item)" class="mr-2" v-permission="['app:EamRepair:view']"
+                    >详 情</van-button
+                  >
                   <van-button
                     size="small"
                     type="primary"
                     @click="edit(item)"
                     class="mr-2"
-                    v-if="item.status === 'CLOSED' || item.status === 'COMPLETED'"
-                    >编 辑</van-button
+                    v-if="item.status === 'COMPLETED'"
+                    >更 改</van-button
                   >
                   <van-button
                     v-if="item.status === 'WAITINGFORCOMFIRM'"
@@ -136,21 +135,21 @@ import { getDict, getLabel } from '@/utils/dictUtils'
 import { getEamDeviceList } from '@/api/eam/device'
 import { NormalNavBar } from '@/layout/components'
 import CustomSelect from '@/components/CustomSelect'
+import useUserStore from '@/store/modules/users'
 
 const router = useRouter()
 
 onMounted(() => {
   getDicts()
   getDevices()
+  queryParams.reportUser = getUserId()
 })
 
 // 加载字典
 const dictObj = reactive({})
 const getDicts = async () => {
-  const eam_repair_type_dict = await getDict('eam_repair_type')
-  const eam_repair_status_dict = await getDict('eam_repair_status')
-  dictObj['eam_repair_type'] = eam_repair_type_dict
-  dictObj['eam_repair_status'] = eam_repair_status_dict
+  dictObj['eam_repair_type'] = await getDict('eam_repair_type')
+  dictObj['eam_repair_status'] = await getDict('eam_repair_status')
 }
 
 const h = window.innerHeight
@@ -165,15 +164,21 @@ const initialParams = {
   pageSize: 10,
   code: '',
   deviceId: '',
+  reportUser: '', // 我的报修
+  statusList: [], // 待维修 = WAITINGFORCOMFIRM
+  repairUser: '', // 需我维修
 }
 function handleSearch() {
-  list.value = []
-  queryParams.pageNum = 0
-  getList()
+  onRefresh()
   showSearchSheet.value = false
 }
 function resetSearch() {
   Object.assign(queryParams, initialParams)
+}
+
+function getUserId() {
+  const userInfo = useUserStore().getUserInfo
+  return userInfo?.user?.userId
 }
 
 const deviceList = ref([])
@@ -193,6 +198,10 @@ const refreshing = ref(false)
 const queryParams = reactive({
   pageNum: 0,
   pageSize: 10,
+  reportUser: getUserId(),
+  reportUser: '', // 我的报修
+  statusList: [], // 待维修 = WAITINGFORCOMFIRM
+  repairUser: '', // 需我维修
 })
 
 // 上拉加载
@@ -204,7 +213,6 @@ const onLoad = () => {
 
 // 下拉刷新
 const onRefresh = () => {
-  Object.assign(queryParams, initialParams)
   list.value = []
   queryParams.pageNum = 0
   // 清空列表数据
@@ -214,6 +222,33 @@ const onRefresh = () => {
   // 将 loading 设置为 true，表示处于加载状态
   loading.value = true
   onLoad()
+}
+
+const isActive = ref('1')
+
+function handleFilter(index) {
+  isActive.value = index
+  Object.assign(queryParams, initialParams)
+
+  switch (index) {
+    case '1':
+      queryParams.reportUser = getUserId()
+      break
+    case '2':
+      queryParams.statusList = ['WAITINGFORREPAIR']
+      break
+    case '3':
+      queryParams.repairUser = getUserId()
+      break
+    case '4':
+      Object.assign(queryParams, initialParams)
+      break
+    default:
+      Object.assign(queryParams, initialParams)
+      break
+  }
+
+  onRefresh()
 }
 
 async function getList() {
@@ -234,13 +269,15 @@ async function getList() {
     total.value = data.total
     // 加载状态结束
     loading.value = false
-  } catch (error) {}
+  } catch (error) {
+    finished.value = true
+  } finally {
+    loading.value = false
+  }
 }
 
-function view(params) {
-  // router.push({ name: 'CodeScanner' })
-
-  router.push({ name: 'RepairView', state: { id: params.id } }) //
+function view(item) {
+  router.push({ name: 'RepairView', state: { id: item.id } }) // -> /user/123
 }
 
 function edit(params) {
@@ -322,6 +359,30 @@ function confirmClose(e) {
       font-size: 15px;
       padding: 0.4rem 0;
     }
+  }
+
+  .tab {
+    width: 100%;
+    text-align: center;
+    height: 32px;
+    line-height: 32px;
+    border: 1px solid var(--van-tabs-default-color);
+  }
+  .tab:nth-child(1) {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+  .tab:nth-child(4) {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+  .isActive {
+    background-color: var(--van-button-primary-background);
+    color: white;
+  }
+  .isNotActive {
+    background-color: white;
+    color: var(--van-tabs-default-color);
   }
 }
 </style>

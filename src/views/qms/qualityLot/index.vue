@@ -9,20 +9,18 @@
                 <span class="font-bold break-words">{{ item.code }}</span>
               </template>
               <template #label>
-                <IndexList>
-                  <template #left> 检验类型 </template>
-                  <template #right> {{ getLabel(dictObj['qms_lot_type'], item.type) }} </template>
+                <IndexList label="检验类型">
+                  {{ getLabel(dictObj['qms_lot_type'], item.type) }}
                 </IndexList>
-                <IndexList>
-                  <template #left> 检验结果 </template>
-                  <template #right> {{ getLabel(dictObj['qms_lot_result'], item.result) }} </template>
+                <IndexList label="检验结果">
+                  {{ getLabel(dictObj['qms_lot_result'], item.result) }}
                 </IndexList>
-                <IndexList>
-                  <template #left> 检验状态 </template>
-                  <template #right> {{ getLabel(dictObj['qms_lot_status'], item.status) }} </template>
+                <IndexList label="检验状态">
+                  {{ getLabel(dictObj['qms_lot_status'], item.status) }}
                 </IndexList>
                 <div class="mt-4">
                   <van-button
+                    v-permission="['app:QmsQualityLot:execute']"
                     :disabled="item.status === 'FINISH'"
                     type="success"
                     size="small"
@@ -31,6 +29,7 @@
                     >执 行</van-button
                   >
                   <van-button
+                    v-permission="['app:QmsQualityLot:close']"
                     :disabled="item.status === 'FINISH'"
                     type="primary"
                     size="small"
@@ -38,7 +37,15 @@
                     class="mr-2"
                     >关 闭</van-button
                   >
-                  <van-button plain type="primary" size="small" @click="detail(item)" class="mr-2">详 情</van-button>
+                  <van-button
+                    v-permission="['app:QmsQualityLot:view']"
+                    plain
+                    type="primary"
+                    size="small"
+                    @click="detail(item)"
+                    class="mr-2"
+                    >详 情</van-button
+                  >
                 </div>
               </template>
             </van-cell>
@@ -112,9 +119,8 @@ const initialParams = {
   type: '',
 }
 function handleSearch() {
-  list.value = []
-  queryParams.pageNum = 0
-  getList()
+  console.log()
+  onRefresh()
   showSearchSheet.value = false
 }
 function resetSearch() {
@@ -130,6 +136,8 @@ const refreshing = ref(false)
 const queryParams = reactive({
   pageNum: 0,
   pageSize: 10,
+  code: '',
+  type: '',
 })
 
 // 上拉加载
@@ -141,7 +149,6 @@ const onLoad = () => {
 
 // 下拉刷新
 const onRefresh = () => {
-  Object.assign(queryParams, initialParams)
   list.value = []
   queryParams.pageNum = 0
   finished.value = false
@@ -168,7 +175,11 @@ async function getList() {
     total.value = data.total
     // 加载状态结束
     loading.value = false
-  } catch (error) {}
+  } catch (error) {
+    finished.value = true
+  } finally {
+    loading.value = false
+  }
 }
 
 function execute(params) {
