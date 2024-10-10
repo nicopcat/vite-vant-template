@@ -40,7 +40,7 @@
       <div class="text-center">
         <div v-if="loading" class="p-4 text-center text-white">加载中...</div>
         <div v-if="errorText" class="p-4 text-center text-white">{{ errorText }}</div>
-        <button type="button" class="button" @click="changeVideoInputDevice" v-if="videoInputDeviceList.length > 1">
+        <button type="button" class="button" @click="changeVideoInputDevice" v-if="videoInputDeviceList.length > 0">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -75,7 +75,7 @@ const errorText = ref('') // 错误信息
 const qrcodeText = ref('') // 扫描到的内容
 const deviceId = ref('') // 使用的设备ID
 const videoInputDeviceList = ref([]) // 设备列表
-const cameraType = ref(0)
+const cameraType = ref(1)
 onMounted(() => {
   openScan()
 })
@@ -95,8 +95,8 @@ function openScan() {
         // 0 前置摄像头  1 后置摄像头
 
         deviceId.value = videoInputDevices[cameraType.value]?.deviceId
-        if (videoInputDevices.value.length >= 1) {
-          deviceId.value = videoInputDevices[1].deviceId
+        if (!deviceId.value) {
+          deviceId.value = videoInputDevices[0]?.deviceId
         }
         decodeFromInputVideo()
       } else {
