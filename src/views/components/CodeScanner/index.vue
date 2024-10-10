@@ -40,7 +40,7 @@
       <div class="text-center">
         <div v-if="loading" class="p-4 text-center text-white">加载中...</div>
         <div v-if="errorText" class="p-4 text-center text-white">{{ errorText }}</div>
-        <button type="button" class="button" @click="changeVideoInputDevice" v-if="false">
+        <button type="button" class="button" @click="changeVideoInputDevice" v-if="videoInputDeviceList.length > 1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -93,8 +93,11 @@ function openScan() {
       if (videoInputDevices.length) {
         videoInputDeviceList.value = videoInputDevices
         // 0 前置摄像头  1 后置摄像头
-        deviceId.value = videoInputDevices[cameraType.value]?.deviceId
 
+        deviceId.value = videoInputDevices[cameraType.value]?.deviceId
+        if (videoInputDevices.value.length >= 1) {
+          deviceId.value = videoInputDevices[1].deviceId
+        }
         decodeFromInputVideo()
       } else {
         // 未检测到摄像头
@@ -130,15 +133,13 @@ function handleError(err) {
     errorText.value = '授权失败，请确认已开启相机权限'
   } else {
     errorText.value = '初始化异常，请确认已开启相机权限'
-    render.stopContinuousDecode()
   }
 }
 
 // 切换摄像头
 const changeVideoInputDevice = () => {
   cameraType.value = cameraType.value == 1 ? 0 : 1
-  console.log(cameraType.value)
-  render.reset()
+
   // 初始化
   openScan()
 }
